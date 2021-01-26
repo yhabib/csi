@@ -25,8 +25,42 @@ Three modes:
 * insert  -> `i` goes to insert mode
 * command line -> `:` goes to command line mode
 
-Exit: `:q` or `:q!`
-Save `:w`
-Can be combined into: `:wq`
+* Exit: `:q` or `:q!`
+* Save `:w`
+* Save only if changes `:x`
+* Can be combined into: `:wq`
 
 
+#### Navigating
+
+**In Norma Mode**
+
+* Show numbers: `:set number`
+* Jump to line: `:5`
+* Jump to end of file: `:$`
+* Jump to end of line: `$`
+
+<!-- https://opensource.com/article/19/3/getting-started-vim -->
+
+
+#### Editing
+
+**In Norma Mode**
+* Deleting line: `dd`
+* Undo: `u`
+* Select mode: `v`
+* To copy after selecting(yank): `y`
+* New line below: `o`
+* Paste: `p`
+
+
+#### Searching:
+
+* Search forward: `/<term>` -> move to next: `n` or to previous: `N`
+* Search backward: `?<term>`
+
+
+#### Bonus
+
+* Split mode: `:split <file2>` or `:vsplit <file2>`
+* Toggle between panels: `ww`
