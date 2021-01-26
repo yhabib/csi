@@ -14,3 +14,19 @@ It's able to check if escape sequences are right or not still compiles
 > integer division truncates: any fractional part is discarded.
 
 EOF terminal character: `CTRL + D`
+
+
+
+## Extra
+
+### VIM
+Three modes:
+* normal -> `ESC` goes to normal mode
+* insert  -> `i` goes to insert mode
+* command line -> `:` goes to command line mode
+
+Exit: `:q` or `:q!`
+Save `:w`
+Can be combined into: `:wq`
+
+
