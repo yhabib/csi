@@ -1,4 +1,3 @@
-
 /*
  * The C Programming Language, second edition,
  *
