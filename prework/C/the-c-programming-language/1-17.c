@@ -8,6 +8,7 @@
  * 1. Get line
  * 2. If line bigger than max print
 */
+
 #include <stdio.h>
 
 #define MIN_SIZE 10
@@ -20,6 +21,7 @@ int main(void)
   char line[MIN_SIZE + 1];
   int isLongWord = 0;
 
+  // No line is empty besides EOF
   while ((len = getLine(line, MIN_SIZE)) > 0)
     if (line[len - 1] != '\n')
     {
