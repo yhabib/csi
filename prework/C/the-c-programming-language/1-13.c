@@ -1,7 +1,7 @@
 /* 
  * The C Programming Language
  *
- * Exercise 1-13, page 24
+ * Exercise 1-13
  *
  * Write a program to print a histogram of the lengths of words in it's
  * input. It is easy to draw a histogram with the bars horizontal; a

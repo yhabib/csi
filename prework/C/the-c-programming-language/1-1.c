@@ -1,7 +1,7 @@
 /* 
  * The C Programming Language
  *
- * Exercise 1-1, page 8
+ * Exercise 1-1
  *
  * Run the "Hello, world" program on your system. Experiment with
  * leaving out parts of the program, to see what error messages you get.
