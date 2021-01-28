@@ -13,9 +13,10 @@ It's able to check if escape sequences are right or not still compiles
 
 > integer division truncates: any fractional part is discarded.
 
-* EOF terminal character: `CTRL + D`
+* `EOF` terminal character: `CTRL + D`
 * Null character: `'\0'` used as convention to indicate end of things. Eg: `char s[] = ['h', 'e', 'l', 'l', 'o', '\0']`
 * Most arguments in functions are treated as **value** but not arrays, those always as **reference**.
+* [getchar and putchar](https://stackoverflow.com/questions/17552458/theory-behind-getchar-and-putchar-functions)
 
 
 ## Extra
