@@ -29,6 +29,18 @@ It's able to check if escape sequences are right or not still compiles
 | int  |  32 |  -2 *31 - 1 | 2 *31 - 1 |  2 *32 - 1 |
 | long  |  64 |  -2 * 63 - 1 | 2 * 63 - 1 |  2 * 64 - 1 |
 
+
+#### Format specifiers
+
+|   Format Specifier|   Description| 
+|---|---|
+|%d |	Integer |
+|%f |	Float |
+|%c |	Character |
+|%s |	String |
+|%u |	Unsigned Integer |
+|%ld |	Long Int |
+
 ## Extra
 
 ### VIM
