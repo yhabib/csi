@@ -43,6 +43,7 @@ int htoi(char s[])
       if (c != 'x' && c != 'X')
         i--;
     }
+    // isdigit(c)
     else if (c >= '0' && c <= '9')
       n += c - '0';
     else if (c >= 'a' && c <= 'f')
