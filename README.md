@@ -20,6 +20,15 @@ It's able to check if escape sequences are right or not still compiles
 * [c - '0'](https://stackoverflow.com/a/7403877/3364845)
 
 
+#### DataTypes
+
+|   Type|   Size(bits)|   min|   max|   u max|
+|---|---|---|---|---|
+|   char|8   |  -128 |  127 |   255|
+| short  |  16 |  -2 *15 -1  | 2 *15 - 1 | 2 *15 - 1 |
+| int  |  32 |  -2 *31 - 1 | 2 *31 - 1 |  2 *32 - 1 |
+| long  |  64 |  -2 * 63 - 1 | 2 * 63 - 1 |  2 * 64 - 1 |
+
 ## Extra
 
 ### VIM
