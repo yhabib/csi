@@ -10,28 +10,35 @@
 *
 */
 
+#include <stdlib.h>
 #include <math.h>
-#include "armstrong_numbers.h"
+#include <stdbool.h>
 
+bool is_armstrong_number(int);
+
+int main(void)
+{
+    printf("%d\n", is_armstrong_number(153));
+    printf("%d\n", is_armstrong_number(9));
+
+    return EXIT_SUCCESS;
+}
+
+/* htoi:  convert hexdicimal string s to integer */
 bool is_armstrong_number(int candidate)
 {
-  int numOfDigits = 0;
-  int original = candidate;
-  int base = candidate;
-  int sum = 0;
-
-  while (candidate)
-  {
-    ++numOfDigits;
-    candidate /= 10;
+  int sum, i, n, d;
+  sum = 0;
+  n = 0;
+  d = 0;
+  
+  for (i = candidate; i > 0; i /= 10)
+    n++;
+  
+  for (i = candidate; i > 0;  i /= 10) {
+    d = i % 10;
+    sum += pow(d, n);
   }
 
-  while (original)
-  {
-    int n = original % 10;
-    sum += pow(n, numOfDigits);
-    original /= 10;
-  }
-
-  return sum == base;
+  return sum == candidate;
 }
