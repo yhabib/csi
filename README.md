@@ -18,6 +18,8 @@ It's able to check if escape sequences are right or not still compiles
 * Most arguments in functions are treated as **value** but not arrays, those always as **reference**.
 * [getchar and putchar](https://stackoverflow.com/questions/17552458/theory-behind-getchar-and-putchar-functions)
 * [c - '0'](https://stackoverflow.com/a/7403877/3364845)
+* If multiple file program: `cc main.c getint.c getch.c`
+* [Compiler vs Linker](https://stackoverflow.com/questions/3831312/what-are-the-differences-between-a-compiler-and-a-linker/3831354#:~:text=A%20compiler%20generates%20object%20code,code%20files%20into%20an%20executable.&text=Some%20languages%2Fcompilers%20do%20not,as%20part%20of%20its%20work.)
 
 
 #### DataTypes
