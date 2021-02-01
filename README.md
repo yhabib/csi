@@ -22,6 +22,8 @@ It's able to check if escape sequences are right or not still compiles
 * [Compiler vs Linker](https://stackoverflow.com/questions/3831312/what-are-the-differences-between-a-compiler-and-a-linker/3831354)
 * [Pointer size](https://stackoverflow.com/questions/38822692/why-to-specify-a-pointer-type/38822710)
 * [char_list vs char pointer](https://stackoverflow.com/questions/1011455/is-it-possible-to-modify-a-string-of-char-in-c)
+* [Undefined behaviour](https://en.wikipedia.org/wiki/Undefined_behavior)
+* With arrays memory allocation is "random": memory can be alloacted in different every time, so the behaviour of the program in this situations is undefined.
 
 
 #### DataTypes
