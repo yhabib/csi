@@ -37,15 +37,18 @@ int main(int argc, char **argv)
   printf("%sls program\n\n", NORMAL_COLOR);
 
   char *path = argc == 1 ? DEFAULT_DIR : argv[1];
-  printf("%sflags\tsize\t\tname\n", NORMAL_COLOR);
-  printf("%s-------------------------------\n", NORMAL_COLOR);
   printDir(path);
+    printf("%lu\n", sizeof(int));
+  printf("%lu\n", sizeof("hello world"));
+  printf("%lu\n", sizeof("hello world, hello world"));
 
   return EXIT_SUCCESS;
 }
 
 void printDir(char *path)
 {
+  printf("%sSize\t\tLast modified\t\tName\n", NORMAL_COLOR);
+  printf("%s--------------------------------------------------------------\n", NORMAL_COLOR);
   struct dirent *dir;
   DIR *d = opendir(path);
 
@@ -60,9 +63,11 @@ void printDir(char *path)
       strcat(f_path, dir->d_name);
       int result = stat(f_path, statbuf);
 
+      // Define max size per column
       // Rounding && apply unit based on size: B or KB
-      printf("%s%u\t", NORMAL_COLOR, statbuf->st_flags);
-      printf("%s%.2f KB\t", NORMAL_COLOR, statbuf->st_size / 1000.0);
+      printf("%s%.2f KB\t\t", NORMAL_COLOR, statbuf->st_size / 1000.0);
+      // Format into date
+      printf("%s%.2ld s\t", NORMAL_COLOR, statbuf->st_mtimespec.tv_sec);
       printf("\t%s%s\n", dir->d_type == DT_DIR ? DIR_COLOR : FILE_COLOR, dir->d_name);
     }
   }
