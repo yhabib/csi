@@ -48,8 +48,6 @@ int main(int argc, char **argv)
 
   flags f = get_flags(argv, argc);
 
-  printf("{ a: %d, h: %d, l: %d }\n", f.a, f.h, f.l);
-
   char *path = argc == 1 ? DEFAULT_DIR : argv[1];
   // print_dir(path);
 
@@ -59,18 +57,14 @@ int main(int argc, char **argv)
 flags get_flags(char **argv, int argc)
 {
   flags f = {0, 0, 0};
-
-  for (int i = 0; i < argc - 1; i++)
+  int i = 0;
+  while (++i < argc)
   {
     argv++;
-    // Iterates over each string in args
     if (**argv == '-')
     {
-      // First char in string is flag initializer
-      // for (; **argv != '\0'; (*argv)++)
       while ((*(*argv)++) != '\0')
-      {
-        
+      {  
         switch (**argv)
         {
         case 'a':
@@ -86,6 +80,7 @@ flags get_flags(char **argv, int argc)
       }
     }
   }
+  printf("{ a: %d, h: %d, l: %d }\n", f.a, f.h, f.l);
   return f;
 }
 
