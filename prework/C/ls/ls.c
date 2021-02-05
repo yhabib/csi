@@ -30,22 +30,66 @@
 #define FILE_COLOR "\x1b[35m"
 
 #define DEFAULT_DIR "./"
-void printDir(char *path);
+
+typedef struct
+{
+  int a;
+  int h;
+  int l;
+} flags;
+void get_path(char **);
+flags get_flags(char **, int);
+void print_dir(char *);
 
 int main(int argc, char **argv)
 {
+
   printf("%sls program\n\n", NORMAL_COLOR);
 
+  flags f = get_flags(argv, argc);
+
+  printf("{ a: %d, h: %d, l: %d }\n", f.a, f.h, f.l);
+
   char *path = argc == 1 ? DEFAULT_DIR : argv[1];
-  printDir(path);
-    printf("%lu\n", sizeof(int));
-  printf("%lu\n", sizeof("hello world"));
-  printf("%lu\n", sizeof("hello world, hello world"));
+  // print_dir(path);
 
   return EXIT_SUCCESS;
 }
 
-void printDir(char *path)
+flags get_flags(char **argv, int argc)
+{
+  flags f = {0, 0, 0};
+
+  for (int i = 0; i < argc - 1; i++)
+  {
+    argv++;
+    // Iterates over each string in args
+    if (**argv == '-')
+    {
+      // First char in string is flag initializer
+      // for (; **argv != '\0'; (*argv)++)
+      while ((*(*argv)++) != '\0')
+      {
+        
+        switch (**argv)
+        {
+        case 'a':
+          f.a = 1;
+          break;
+        case 'h':
+          f.h = 1;
+          break;
+        case 'l':
+          f.l = 1;
+          break;
+        }
+      }
+    }
+  }
+  return f;
+}
+
+void print_dir(char *path)
 {
   printf("%sSize\t\tLast modified\t\tName\n", NORMAL_COLOR);
   printf("%s--------------------------------------------------------------\n", NORMAL_COLOR);
