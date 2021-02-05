@@ -1,13 +1,14 @@
 /* 
- * ls 
- *
- * ls program
- * 1st iteration
- *  1. Read input: path if none then use default dir "./"
- *  2. Go to path: opendir
- *  3. Read path: readdir
- *  4. Show stats: stat
- *  5. Print error: perror
+ * ls - Yusef Habib
+ *  
+ *  1. Get all flags
+ *  2. Get all paths
+ *  3. Render:
+ *    3.1 As space separated values per path and filtering .hidden files
+ *    3.2 -a All files
+ *    3.3 -l As list
+ *    3.3 -h If list then print nicely: time, size, ...
+ *  4. More stats: st_mode: permissions, sm_mtime: time, st_uid: , st_author: author
 */
 
 #include <stdio.h>
@@ -37,21 +38,23 @@ typedef struct
   int h;
   int l;
 } flags;
-void get_path(char **);
+
+char **get_paths(char **, int);
 flags get_flags(char **, int);
 void print_dir(char *);
 
 int main(int argc, char **argv)
 {
-
-  printf("%sls program\n\n", NORMAL_COLOR);
-
   flags f = get_flags(argv, argc);
-
-  char *path = argc == 1 ? DEFAULT_DIR : argv[1];
-  // print_dir(path);
+  char **paths = get_path(argv, argc);
+  print_dir(*paths);
 
   return EXIT_SUCCESS;
+}
+
+char **get_paths(char **argv, int argc)
+{
+  // to find each path and then return as an array of paths
 }
 
 flags get_flags(char **argv, int argc)
@@ -64,7 +67,7 @@ flags get_flags(char **argv, int argc)
     if (**argv == '-')
     {
       while ((*(*argv)++) != '\0')
-      {  
+      {
         switch (**argv)
         {
         case 'a':
@@ -84,6 +87,7 @@ flags get_flags(char **argv, int argc)
   return f;
 }
 
+// With no flags should be just list of files(filtering .)
 void print_dir(char *path)
 {
   printf("%sSize\t\tLast modified\t\tName\n", NORMAL_COLOR);
