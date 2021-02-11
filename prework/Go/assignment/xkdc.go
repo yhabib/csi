@@ -7,13 +7,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 )
 
 const (
 	pathToComicCount = "https://xkcd.com/info.0.json"
-	pathToIndex      = "./index"
+	pathToComic      = "https://xkcd.com/%d/info.0.json"
+	pathToIndex      = "./index.json"
 )
 
 // Comic represetns the XDCD structure
@@ -27,29 +29,62 @@ type Comic struct {
 }
 
 func main() {
-	num, _ := getCountOfComics()
-	println(num)
+	createIndex()
+}
+
+func createIndex() bool {
+	comics, err := getComics()
+	if err != nil {
+		//  ! Where to handle errors? here or at the fetch level?? What error do I throw here
+		// fmt.Fprintf(os.Stderr, "page cannot be fetched: %s\n", resp.Status)
+		return false
+	}
+	fmt.Println(comics)
+
+	file, _ := json.MarshalIndent(comics, "", " ")
+	err = ioutil.WriteFile(pathToIndex, file, 0644)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error writing to file: %v\n", err)
+		return false
+	}
+	return true
+}
+
+func getComics() ([]Comic, error) {
+	count, _ := getCountOfComics()
+	fmt.Println(count)
+	var comics []Comic
+	for i := 1; i < 5; i++ {
+		var comic Comic
+		path := fmt.Sprintf(pathToComic, i)
+		fmt.Println(path)
+		comic, err := getComic(path)
+		if err != nil {
+			return comics, err
+		}
+		comics = append(comics, comic)
+	}
+	return comics, nil
+}
+
+func getComic(url string) (Comic, error) {
+	var comic Comic
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error fetching comic: %v\n", err)
+		return comic, err
+	}
+
+	defer resp.Body.Close()
+	if err = json.NewDecoder(resp.Body).Decode(&comic); err != nil {
+		fmt.Fprintf(os.Stderr, "error decoding the body: %v\n", err)
+		return comic, err
+	}
+
+	return comic, nil
 }
 
 func getCountOfComics() (int, error) {
-	resp, err := http.Get(pathToComicCount)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
-		return 0, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Fprintf(os.Stderr, "page cannot be fetched: %s\n", resp.Status)
-		return 0, err
-	}
-	// A defer statement defers the execution of a function until the surrounding function returns.
-	defer resp.Body.Close()
-
-	var comic Comic
-	if err = json.NewDecoder(resp.Body).Decode(&comic); err != nil {
-		fmt.Fprintf(os.Stderr, "error decoding the body: %v\n", err)
-		return 0, err
-	}
-
+	comic, _ := getComic(pathToComicCount)
 	return comic.Num, nil
 }

@@ -3,3 +3,4 @@
 test.c
 *.gif
 bin/**
+**/assignment/index.json
