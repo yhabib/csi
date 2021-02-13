@@ -56,7 +56,7 @@ func main() {
 		os.Exit(1)
 	}
 	for i, match := range matches {
-		fmt.Printf("%d:\t%s \n\t%s\n", i+1, match.URL, match.Transcript)
+		fmt.Printf("%d:\t Url: %s \n\t Transcript: %s\n", i+1, match.URL, strings.Replace(match.Transcript, "\n", " ", -1))
 	}
 }
 
@@ -168,6 +168,7 @@ func getComic(url string) (Comic, error) {
 	return comic, nil
 }
 
-// Some final comments:
+// Open things:
+//  Not filling the index if file already generated
 //  Best way of handling errors? Log them low in the chain, exit the program high in the chain
-//  Marshalling and unmarshalling too many times
+//  Marshalling and unmarshalling too many times. Why not take response and direct to file??
