@@ -47,20 +47,27 @@ int get_number_of_paths(char **, int);
 
 int main(int argc, char **argv)
 {
-  // Order of these two matters
-  int number_of_paths = get_number_of_paths(argv, argc);
-  flags f = get_flags(argv, argc);
+  int number_of_paths, i;
+  flags f;
 
-  // printf("Total: %d\n", number_of_paths);
-  while (--argc > 0 && (*++argv)[0] != '-')
+  number_of_paths = get_number_of_paths(argv, argc);
+  i = 0;
+  f = get_flags(argv, argc);
+
+  // Skips the program name arg
+  argv++;
+  while (i < number_of_paths)
   {
-    if (argc < number_of_paths - 1)
-      printf("\n");
+    if ((*++argv)[0] == '-')
+      continue;
 
     if (number_of_paths > 1)
       printf("%s:\n", *argv);
+    if (i >= 1)
+      printf("\n");
 
     print_dir(*argv, f);
+    i++;
   }
   return EXIT_SUCCESS;
 }
@@ -70,11 +77,28 @@ int main(int argc, char **argv)
 int get_number_of_paths(char **argv, int argc)
 {
   int count = 0;
-  while (--argc > 0 && (*++argv)[0] != '-')
+  while (--argc > 0)
   {
-    count++;
+    if ((*++argv)[0] != '-')
+      count++;
   }
   return count;
+}
+
+int calculate_max_size_of_name(struct dirent **dirs, int size)
+{
+  int max, i;
+
+  max = 0;
+  i = 0;
+  while (i < size)
+  {
+    int size = strlen(dirs[i]->d_name);
+    if (size > max)
+      max = size;
+    i++;
+  }
+  return max;
 }
 
 flags get_flags(char **argv, int argc)
@@ -103,7 +127,6 @@ flags get_flags(char **argv, int argc)
       }
     }
   }
-  // printf("{ a: %d, h: %d, l: %d }\n", f.a, f.h, f.l);
 
   return f;
 }
@@ -117,21 +140,25 @@ void print_dir(char *path, flags f)
 {
   struct dirent *dir;
   struct dirent **dirs;
-  int n, i;
+  int n, i, max_size_of_name;
+
   i = 0;
-  printf("Analyzing: %s\n", path);
   n = scandir(path, &dirs, f.a == 0 ? filter_hidden_files : NULL, alphasort);
+  max_size_of_name = calculate_max_size_of_name(dirs, n) + 1;
+
   if (n == -1)
   {
     perror("scandir");
     exit(EXIT_FAILURE);
   }
-
   if (f.l == 0)
   {
     while (i < n)
     {
-      printf("%s ", dirs[i]->d_name);
+      if (i == n - 1)
+        printf("%s", dirs[i]->d_name);
+      else
+        printf("%-*.*s", max_size_of_name, max_size_of_name, dirs[i]->d_name);
       free(dirs[i]);
       i++;
     }
@@ -164,21 +191,5 @@ void print_dir(char *path, flags f)
       i++;
     }
   }
-  // else
-  // {
-  //   while ((dir = readdir(d)) != NULL)
-  //   {
-  //     struct stat *statbuf;
-  //     char f_path[MAX_SIZE_PATH];
-
-  //     strcpy(f_path, "");
-  //     strcat(f_path, dir->d_name);
-
-  //     int result = stat(f_path, statbuf);
-  //     // Define max size per column
-  //     // Rounding && apply unit based on size: B or KB
-  //     printf("%s%.2f KB", NORMAL_COLOR, statbuf->st_size / 1000.0);
-  //     printf("%s%.2ld s", NORMAL_COLOR, statbuf->st_mtimespec.tv_sec);
-  //     printf("%s%s\n", dir->d_type == DT_DIR ? DIR_COLOR : FILE_COLOR, dir->d_name);
   free(dirs);
 }
