@@ -21,6 +21,8 @@ In mac some commands are different, to use UNIX ones:
 
 All GNU ones are accesible by prefixing them with `g`, eg: `gdate`
 
+Nice linter to work with shell scripts: `shellcheck`
+
 ## Variables
 
 A variable can contain a number, a character or a string of characters.
@@ -64,13 +66,17 @@ echo $#     # Prints the amount of arguments pased
 Very similar to variable initialization
 
 ```sh
-my_array=(1 apple "long string" `date`)
-echo $my_array[1]
+my_array=(1 apple "long string" $(date))
+echo "${my_array[1]}"
 my_array[1]=orange
-echo $my_array[1]
-echo $my_array[2]
-echo $my_array[3]
+echo "${my_array[1]}"
+echo "${my_array[2]}"
+echo "${my_array[3]}"
+echo "${my_array[@]}"             // Refers to all the array values
+echo "${#my_array[@]}"            // Refers to the size of the array
+
 ```
+
 
 ## Operations
 
@@ -90,7 +96,125 @@ echo "$TOTAL"
 
 ### String
 
-To know length of string: `${#<variable_holding_string>}
+Some string operations 
+```sh
+STRING="Hello World!"
+${#STRING}                                # Get the lenght of a string, in this case 12
+
+SUBSTRING="ld"
+echo expr index "$STRING" "$SUBSTRING"    # Finds first match of any letter of SUBSTRING in STRING
+temp=${STRING%%SUBSTRING*}                # Mac alternative https://stackoverflow.com/a/17615946/3364845
+LEN=$((${#temp} + 1))
+
+POS=1
+LEN=3
+echo ${STRING:$POS:$LEN}                  # Substring of STRING, it starts counting at 0 -> ell
+echo ${STRING:$POS}                       # If LEN omitted then till the end
+
+STRING="to be or not to be"
+echo ${STRING[@]/be/eat}                  # Replaces first match of be w/ eat -> to eat or not to be
+echo ${STRING[@]//be/eat}                 # Replaces all matches of be w/ eat -> to eat or not to eat
+echo ${STRING[@]// not/}                  # Deletes all matches of not -> to be or to be
+echo ${STRING[@]/#to be/eat now}          # Replaces if at beggining of string -> eat now or not to be
+echo ${STRING[@]/%be/eat}                 # Replaces if at end of string -> to be or not to eat
+echo ${STRING[@]/%be/be on $(date +%Y-%m-%d)}   
+```
+
+## Decision making
+
+Syntax if-else:
+```sh
+NAME="George"
+if [ "$NAME" = "John" ]; then
+  echo "John Lennon"
+elif [ "$NAME" = "George" ]; then
+  echo "George Harrison"
+else
+  echo "This leaves us with Paul and Ringo"
+fi
+```
+
+Syntax switch:
+```sh
+mycase=1
+case $mycase in
+    1) echo "You selected bash";;
+    2) echo "You selected perl";;
+    3) echo "You selected phyton";;
+    4) echo "You selected c++";;
+    5) exit
+esac
+```
+
+Numeric comparisons:
+```sh
+comparison    Evaluated to true when
+$a -lt $b      $a < $b
+$a -gt $b      $a > $b
+$a -le $b      $a <= $b
+$a -ge $b      $a >= $b
+$a -eq $b      $a is equal to $b
+$a -ne $b      $a is not equal to $b
+```
+
+String comparisons:
+```sh
+comparison     Evaluated to true when
+"$a" = "$b"     $a is the same as $b
+"$a" == "$b"    $a is the same as $b
+"$a" != "$b"    $a is different from $b
+-z "$a"         $a is empty
+```
+
+## Looping
+```sh
+FRUITS=(Apple Banana Pear Grape)          # Creates array
+for N in "${FRUITS[@]}" ; do              # Iterates
+  if [ "${N:0:1}" == "A" ]; then          # Check for first letter
+    echo "It is an $N"
+  else
+    echo "It is a $N"
+  fi
+done
+```
+```sh
+COUNT=4
+while [ $COUNT -gt 0 ]; do
+  echo "Value of count is: $COUNT"
+  COUNT=$(($COUNT - 1))
+done
+```
+
+It executes the loop while the condition is false
+```sh
+COUNT=1
+until [ $COUNT -gt 5 ]; do
+  echo "Value of count is: $COUNT"
+  COUNT=$(($COUNT + 1))
+done
+```
+
+`continue` to skip current interation
+`break` to skip entire rest of the loop
+
+## Functions
+
+Examples:
+```sh
+function function_B {
+  echo "Function B."
+}
+function function_A {
+  echo "$1"
+}
+function adder {
+  echo "$(($1 + $2))"
+}
+
+function_A "Function A."     
+function_B                   
+adder 12 56   
+```
 
 ## Commands
 grep, sort, uniq, cut wc, sed, strinsg, head, tail, awk
@@ -98,7 +222,6 @@ ps, fg, bg, jobs, kill,
 cd, cat, cp, rm, ls, mv, ln, file, chmod, chown, du, mkdir, mkfifo,
 man, help, echo, apropos, tee, test, xargs
 
-`shellcheck`
 
 ### grep
 
