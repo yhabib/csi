@@ -29,10 +29,14 @@ func (l IntList) Foldr(fn binFunc, acc int) int {
 
 // Filter filters list
 func (l IntList) Filter(fn predFunc) IntList {
+	// https://stackoverflow.com/a/39119736/3364845
 	nl := make(IntList, 0, l.Length())
+	i := 0
 	for _, item := range l {
 		if fn(item) {
-			nl = append(nl, item)
+			nl = nl[:i+1]
+			nl[i] = item
+			i++
 		}
 	}
 	return nl
@@ -40,9 +44,10 @@ func (l IntList) Filter(fn predFunc) IntList {
 
 // Length returns size of list
 func (l IntList) Length() (size int) {
-	for ; size < len(l); size++ {
+	for range l {
+		size++
 	}
-	return size
+	return
 }
 
 // Map applies op in place to all items in list
