@@ -3,9 +3,9 @@
 
 function ENGLISH_CALC {
   case $2 in
-    plus) echo $(($1 + $3));;
-    minus) echo $(($1 - $3));;
-    times) echo $(($1 * $3));;
+    plus) echo "${1} + ${3} = $(($1 + $3))";;
+    minus) echo "${1} - ${3} = $(($1 - $3))";;
+    times) echo "${1} * ${3} = $(($1 * $3))";;
     5) exit
 esac
 }
