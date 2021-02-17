@@ -74,9 +74,7 @@ echo "${my_array[2]}"
 echo "${my_array[3]}"
 echo "${my_array[@]}"             // Refers to all the array values
 echo "${#my_array[@]}"            // Refers to the size of the array
-
 ```
-
 
 ## Operations
 
@@ -216,11 +214,80 @@ function_B
 adder 12 56   
 ```
 
+### Special variables
+
+* `$0` - The filename of the current script.
+* `$n` - The Nth argument passed to script was invoked or function was called.
+* `$#` - The number of argument passed to script or function. 
+* `$@` - All arguments passed to script or function. Better this approach
+* `$*` - All arguments passed to script or function. Doesn't work if wrapped with quotes
+* `$?` - The exit status of the last command executed.
+* `$$` - The process ID of the current shell. For shell scripts, this is the process ID under which they are executing.
+* `$!` - The process number of the last background command.
+
+
+## Varia
+
+### File testing
+
+Unix has a command called `test` that is used to do "assertions. It has to syntax call to `test` or alternative `[ <condition> ]`.[More](https://en.wikipedia.org/wiki/Test_(Unix))
+
+```sh
+#!/bin/bash
+
+filename="sample.md"
+directory_name="test_directory"
+
+if [ -e "$filename" ]; then                           # "-e" tests if file exist
+    echo "$filename exists as a file"
+fi
+
+if [ -d "$directory_name" ]; then                     # "-d" tests if directory exists
+    echo "$directory_name exists as a directory"
+fi
+
+if [ ! -f "$filename" ]; then                         # "-f" tests if is a regular file
+    touch "$filename"
+fi
+if [ -r "$filename" ]; then                           # "-r" tests if file has read permission for the user running the script/test
+    echo "you are allowed to read $filename"
+else
+    echo "you are not allowed to read $filename"
+fi
+```
+
+### Pipes
+
+By default pipelines redirects only the standard output, if you want to include the standard error you need to use the form `|&`
+
+```sh
+ls / | wc -l                                  # Show number of entries from ls
+ls / | head                                   # Show ten first entries from ls
+cat /proc/cpuinfo | grep processor | wc -l    # Show number of processors
+```
+
+### Process substitution
+
+Process substitution allows a process’s input or output to be referred to using a filename. It has two forms: output `<(cmd)`, and input `>(cmd)`.
+
+Output example:
+```sh
+# Version one of diffing two files: first sort them to avoid false positives and the diff them
+sort file1 > sorted_file1
+sort file2 > sorted_file2
+diff sorted_file1 sorted_file2
+
+# Process substituion solution
+diff <(sort file1) <(sort file2)
+```
+
 ## Commands
-grep, sort, uniq, cut wc, sed, strinsg, head, tail, awk
+grep, sort, uniq, cut, wc, sed, strinsg, head, tail, awk
 ps, fg, bg, jobs, kill,
 cd, cat, cp, rm, ls, mv, ln, file, chmod, chown, du, mkdir, mkfifo,
 man, help, echo, apropos, tee, test, xargs
+<!--  -->
+
 
 
 ### grep
@@ -230,6 +297,11 @@ The command `grep` is used to search for Patterns in each File.
 Flags:
 * `-e`
 
+```sh
+
+```
+
+### sort
 
 
 ### which
