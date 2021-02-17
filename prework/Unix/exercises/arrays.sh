@@ -1,8 +1,14 @@
 #!/bin/bash
 
-my_array=(1 apple "long string" $(gdate))
-echo "${my_array[1]}"
-my_array[1]=orange
-echo "${my_array[1]}"
-echo ${my_array[2]}
-echo ${my_array[3]}
+# In this exercise, you will need to compare three list of arrays and write the 
+# common elements of all the three arrays:
+
+a=(3 5 8 10 6)
+b=(6 5 4 12)
+c=(14 7 5 7)
+
+i = 0
+
+while [ i -lt ${#a} ]; do
+
+end
