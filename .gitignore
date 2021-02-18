@@ -5,3 +5,5 @@ test.c
 *.gif
 bin/**
 **/**/assignment/**/*.json
+**/unix/**/*.txt
+**/unix/**/*.html
