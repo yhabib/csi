@@ -18,27 +18,27 @@ bool is_armstrong_number(int);
 
 int main(void)
 {
-    printf("%d\n", is_armstrong_number(153));
-    printf("%d\n", is_armstrong_number(9));
+  printf("%d\n", is_armstrong_number(153));
+  printf("%d\n", is_armstrong_number(9));
 
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 
-/* htoi:  convert hexdicimal string s to integer */
 bool is_armstrong_number(int candidate)
 {
-  int sum, i, n, d;
-  sum = 0;
-  n = 0;
-  d = 0;
-  
-  for (i = candidate; i > 0; i /= 10)
-    n++;
-  
-  for (i = candidate; i > 0;  i /= 10) {
-    d = i % 10;
-    sum += pow(d, n);
-  }
+  int number_of_digits = 0;
+
+  for (int i = candidate; i > 0; i /= 10)
+    number_of_digits++;
+
+  int sum = 0;
+  for (int i = candidate; i > 0; i /= 10)
+    sum += pow(i % 10, number_of_digits);
 
   return sum == candidate;
 }
+
+// Feedback:
+// It's a best practice to try to avoid uninitialized variables. I would go even one step further and say that you should define variables as late as
+// possible and in the narrowest possible scope. Often that turns unintended uses into errors (which is a good thing). It also reduces the mental burden
+//  of the reader because they don't have to remember the type and value of a variable for several lines.
