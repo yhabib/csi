@@ -62,6 +62,16 @@ echo $#     # Prints the amount of arguments pased
 ./test.sh hello 2 "ma name is"
 ```
 
+### Default values
+More [here](https://www.debuntu.org/how-to-bash-parameter-expansion-and-default-values)
+
+```sh
+${parameter:-word}      # to use a default value
+${parameter:=word}      # to assign a default value
+${parameter:?word}      # to display an error if unset or null
+${parameter:+word}      # to use an alternate value
+```
+
 ### Arrays
 Very similar to variable initialization
 
@@ -72,8 +82,8 @@ my_array[1]=orange
 echo "${my_array[1]}"
 echo "${my_array[2]}"
 echo "${my_array[3]}"
-echo "${my_array[@]}"             // Refers to all the array values
-echo "${#my_array[@]}"            // Refers to the size of the array
+echo "${my_array[@]}"             # Refers to all the array values
+echo "${#my_array[@]}"            # Refers to the size of the array
 ```
 
 ## Operations
@@ -162,6 +172,7 @@ comparison     Evaluated to true when
 "$a" == "$b"    $a is the same as $b
 "$a" != "$b"    $a is different from $b
 -z "$a"         $a is empty
+-n "$a"         $a is not empty
 ```
 
 ## Looping
@@ -298,9 +309,15 @@ Flags:
 * `-e`
 
 ```sh
-
+grep 'string1' filename | grep 'string2'              # Multistring match
+grep 'string1.*string2\|string2.*string1' filename    # Multistring match
 ```
 
+### wc
+```sh
+wc -l myfile.sh                   # Counts number of lines from file
+echo "Hello World!" | wc -w       # Counts number of wrods from file
+```
 ### sort
 
 
