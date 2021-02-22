@@ -11,63 +11,38 @@
  *  4. More stats: st_mode: permissions, sm_mtime: time, st_uid: , st_author: author
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
-// opendir&readdir
-#include <sys/types.h>
-#include <dirent.h>
-
-// stat
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-// styles
-#define NORMAL_COLOR "\x1B[0m"
-#define DIR_COLOR "\x1b[36m"
-#define FILE_COLOR "\x1b[35m"
-
-#define DEFAULT_DIR "./"
-#define MAX_SIZE_PATH 255
-
-typedef struct
-{
-  int a;
-  int h;
-  int l;
-} flags;
-
-// Definitions
-flags get_flags(char **, int);
-void print_dir(char *, flags);
-int get_number_of_paths(char **, int);
+#include "ls.h"
 
 int main(int argc, char **argv)
 {
-  int number_of_paths, i;
-  flags f;
-
-  number_of_paths = get_number_of_paths(argv, argc);
-  i = 0;
-  f = get_flags(argv, argc);
+  int number_of_paths = get_number_of_paths(argv, argc);
+  int i = 0;
+  flags f = get_flags(argv, argc);
 
   // Skips the program name arg
   argv++;
-  while (i < number_of_paths)
+  if (number_of_paths == 0)
   {
-    if ((*++argv)[0] == '-')
-      continue;
+    print_dir(DEFAULT_DIR, f);
+  }
+  else
+  {
 
-    if (number_of_paths > 1)
-      printf("%s:\n", *argv);
-    if (i >= 1)
-      printf("\n");
+    while (i < number_of_paths)
+    {
+      if ((*++argv)[0] == '-')
+        continue;
 
-    print_dir(*argv, f);
-    i++;
+      if (number_of_paths == 0)
+
+        if (number_of_paths > 1)
+          printf("%s:\n", *argv);
+      if (i >= 1)
+        printf("\n");
+
+      print_dir(*argv, f);
+      i++;
+    }
   }
   return EXIT_SUCCESS;
 }
@@ -140,11 +115,9 @@ void print_dir(char *path, flags f)
 {
   struct dirent *dir;
   struct dirent **dirs;
-  int n, i, max_size_of_name;
-
-  i = 0;
-  n = scandir(path, &dirs, f.a == 0 ? filter_hidden_files : NULL, alphasort);
-  max_size_of_name = calculate_max_size_of_name(dirs, n) + 1;
+  int i = 0;
+  int n = scandir(path, &dirs, f.a == 0 ? filter_hidden_files : NULL, alphasort);
+  int max_size_of_name = calculate_max_size_of_name(dirs, n) + 1;
 
   if (n == -1)
   {
@@ -156,9 +129,14 @@ void print_dir(char *path, flags f)
     while (i < n)
     {
       if (i == n - 1)
-        printf("%s", dirs[i]->d_name);
+      {
+        printf("%s%s\n", dirs[i]->d_type == DT_DIR ? CYAN_COLOR : WHITE_COLOR, dirs[i]->d_name);
+      }
       else
-        printf("%-*.*s", max_size_of_name, max_size_of_name, dirs[i]->d_name);
+      {
+        printf("Type: %d\n", dirs[i]->d_type);
+        printf("%s%-*.*s", dirs[i]->d_type == DT_DIR ? CYAN_COLOR : WHITE_COLOR, max_size_of_name, max_size_of_name, dirs[i]->d_name);
+      }
       free(dirs[i]);
       i++;
     }
@@ -185,7 +163,7 @@ void print_dir(char *path, flags f)
       printf("File: %s ", dirs[i]->d_name);
       // printf("%s%.2f KB", NORMAL_COLOR, statbuf->st_size / 1000.0);
       // printf("%s%.2ld s", NORMAL_COLOR, statbuf->st_mtimespec.tv_sec);
-      printf("%s%s\n", dir->d_type == DT_DIR ? DIR_COLOR : FILE_COLOR, dir->d_name);
+      printf("%s%s\n", dir->d_type == DT_DIR ? CYAN_COLOR : WHITE_COLOR, dir->d_name);
 
       free(dirs[i]);
       i++;
