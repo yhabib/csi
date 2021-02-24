@@ -12,6 +12,7 @@
 # grep -n print line number
 #  grep -m 1 -> find first match
 # printf works better for escaping characs
+#  sed "s/<[^>]*>//g -> For matching innerText in HTML NODE by deleting the tags
 # ---------------------------------------------------------------------------------------------------------------------------
 
 ## Todos:
