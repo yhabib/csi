@@ -5,9 +5,9 @@ import (
 )
 
 // Notes:
-// Sets are creted in Go as mab of rune to bool: make(map[rune]bool)
+// Sets are creted in Go as map of rune to bool: make(map[rune]bool)
 // Performancewise is better to operate at the rune level, faster
-// More performant to iterate through the list than the Mao
+// More performant to iterate through the list than the Map
 //  eg: if unicode.IsLetter(c) && strings.ContainsRune(s[i+1:], c) {
 
 // IsIsogram checks if a word is an isogram: no repeated letters
