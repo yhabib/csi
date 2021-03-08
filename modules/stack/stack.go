@@ -1,13 +1,5 @@
 package stack
 
-// ADS
-//  * New: 		 Constructor
-//  * Push: 	 Append item to the top of the stack. Return nothing
-//  * Pop: 		 Remove item from the top of the stack. Return item
-//  * Peek: 	 Check item on the top of the stack. Return item.
-//  * IsEmpty: Checks if the Stack contains items
-//  * Size:    Get the size of the stack. Return size
-
 // Stack is a basic LIFO structure that resizes as needed
 type Stack struct {
 	Stack []interface{}
