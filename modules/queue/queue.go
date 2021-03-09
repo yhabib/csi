@@ -1,31 +1,37 @@
+// Package queue implements the Queue ADS with two Stacks
 package queue
+
+import (
+	"github.com/yhabib/csi/tree/main/modules/stack"
+)
 
 // Queue data structure
 type Queue struct {
-	Queue []interface{}
+	rearStack  stack.Stack
+	frontStack stack.Stack
 }
 
 // New is conustrctor of Queue
 func (q *Queue) New() {
-	q.Queue = make([]interface{}, 0)
+	q.items = make([]interface{}, 0)
 }
 
 func (q *Queue) enqueue(item interface{}) {
 	tempQueue := []interface{}{item}
-	q.Queue = append(tempQueue, q.Queue...)
+	q.items = append(tempQueue, q.items...)
 }
 
 func (q *Queue) dequeue() interface{} {
-	length := len(q.Queue)
-	item := q.Queue[length-1]
-	q.Queue = q.Queue[:length-1]
+	length := len(q.items)
+	item := q.items[length-1]
+	q.items = q.items[:length-1]
 	return item
 }
 
 func (q *Queue) isEmpty() bool {
-	return len(q.Queue) == 0
+	return len(q.items) == 0
 }
 
 func (q *Queue) size() int {
-	return len(q.Queue)
+	return len(q.items)
 }
