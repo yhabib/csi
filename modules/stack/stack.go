@@ -1,48 +1,43 @@
+// Package stack implements the Stack ADS
 package stack
 
 // Stack is a basic LIFO structure that resizes as needed
 type Stack struct {
-	Stack []interface{}
-}
-
-// New is the constructor
-func (s *Stack) New() {
-	s.Stack = make([]interface{}, 0)
+	items []interface{}
 }
 
 // Push appends to the top of the Stack
 func (s *Stack) Push(item interface{}) {
-	// a slice referencing the storage of s.Stack
-	s.Stack = append(s.Stack[:], item)
+	s.items = append(s.items, item)
 }
 
 // Pop removes and returns top of the stack
 func (s *Stack) Pop() interface{} {
-	size := len(s.Stack)
+	size := len(s.items)
 	if size == 0 {
 		return nil
 	}
-	item := s.Stack[size-1]
-	s.Stack = s.Stack[:size-1]
+	item := s.items[size-1]
+	s.items = s.items[:size-1]
 	return item
 }
 
 // Peek returns the element in the top of the Stack
 func (s *Stack) Peek() interface{} {
-	size := len(s.Stack)
+	size := s.Size()
 	if size == 0 {
 		return nil
 	}
 
-	return s.Stack[size-1]
+	return s.items[size-1]
 }
 
 // IsEmpty returns if the Stack is empty or not
 func (s *Stack) IsEmpty() bool {
-	return len(s.Stack) == 0
+	return s.Size() == 0
 }
 
 // Size returns the size of the Stack
 func (s *Stack) Size() int {
-	return len(s.Stack)
+	return len(s.items)
 }
