@@ -1,5 +1,9 @@
 package vm
 
+import (
+	"log"
+)
+
 const (
 	Load  = 0x01
 	Store = 0x02
@@ -20,6 +24,12 @@ const (
 //  - Can I add byte to int? 0x08 + 3?
 //  - Overflow is down automatically because of the size of the variable
 // -  I can't have negative numbers, same overflow 2-3=255
+
+// From Oz:
+// You could theoretically write a program which produces instructions at run time, places them
+// in memory, and then points the program counter at them (this is what JIT compilation is).
+// For this trick you need a segment that’s both writable and executable…. if you were using the data
+// segment here you’d have to leave it executable; if using the text segment you’d need to make it writable
 
 // Given a 256 byte array of "memory", run the stored program
 // to completion, modifying the data in place to reflect the result
@@ -43,7 +53,12 @@ loop:
 		case Load:
 			registers[memory[pos+1]] = memory[memory[pos+2]]
 
+		// Memory protection
 		case Store:
+			mp := memory[pos+2]
+			if mp > 7 {
+				log.Fatalf("Terminating program due an attempt to overwritte instructions sections")
+			}
 			memory[memory[pos+2]] = registers[memory[pos+1]]
 
 		case Halt:
@@ -55,8 +70,17 @@ loop:
 		case Sub:
 			registers[memory[pos+1]] -= registers[memory[pos+2]]
 
+		// Memory protection
 		case Jump:
-			registers[0] = memory[pos+1]
+			newPos := memory[pos+1]
+			if newPos < 8 {
+				log.Fatalf("Terminating program due an attempt to jump out of the instructions section")
+			}
+			// This is not so straightforward, some instrucions betweeen new position and current one could avoid potential infinite loop
+			// if newPos < registers[0] {
+			// 	log.Fatalf("Terminating program due an attempt to jump back in the intructions section, possible infinite loop")
+			// }
+			registers[0] = newPos
 			continue loop
 
 		case Beqz:
@@ -71,6 +95,9 @@ loop:
 		case Subi:
 			registers[memory[pos+1]] -= memory[pos+2]
 
+		default:
+			// panic(fmt.Sprintf("unknown operation %d"))
+			log.Fatalf("Terminting due unknow operation %d", op)
 		}
 		registers[0] += 3
 	}
