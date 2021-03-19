@@ -21,9 +21,9 @@ const (
 )
 
 // Notes:
-//  - Can I add byte to int? 0x08 + 3?
+//  - Can I add byte to int? 0x08 + 3? Yes, byte is just an int capped at 255
 //  - Overflow is down automatically because of the size of the variable
-// -  I can't have negative numbers, same overflow 2-3=255
+// -  I can't have negative numbers, overflow takes care 2-3=255
 
 // From Oz:
 // You could theoretically write a program which produces instructions at run time, places them
