@@ -46,54 +46,53 @@ func compute(memory []byte) {
 	// Keep looping, like a physical computer's clock
 loop:
 	for {
-		pos := registers[0]
-		op := memory[pos]
+		pc := registers[0]
 
-		switch op {
+		switch memory[pc] {
 		case Load:
-			registers[memory[pos+1]] = memory[memory[pos+2]]
+			registers[memory[pc+1]] = memory[memory[pc+2]]
 
 		// Memory protection
 		case Store:
-			mp := memory[pos+2]
+			mp := memory[pc+2]
 			if mp > 7 {
 				log.Fatalf("Terminating program due an attempt to overwritte instructions sections")
 			}
-			memory[memory[pos+2]] = registers[memory[pos+1]]
+			memory[memory[pc+2]] = registers[memory[pc+1]]
 
 		case Halt:
 			break loop
 
 		case Add:
-			registers[memory[pos+1]] += registers[memory[pos+2]]
+			registers[memory[pc+1]] += registers[memory[pc+2]]
 
 		case Sub:
-			registers[memory[pos+1]] -= registers[memory[pos+2]]
+			registers[memory[pc+1]] -= registers[memory[pc+2]]
 
 		// Memory protection
 		case Jump:
-			newPos := memory[pos+1]
-			if newPos < 8 {
+			newpc := memory[pc+1]
+			if newpc < 8 {
 				log.Fatalf("Terminating program due an attempt to jump out of the instructions section")
 			}
-			// This is not so straightforward, some instrucions betweeen new position and current one could avoid potential infinite loop
-			// if newPos < registers[0] {
-			// 	log.Fatalf("Terminating program due an attempt to jump back in the intructions section, possible infinite loop")
+			// This is not so straightforward, some instrucions betweeen new pcition and current one could avoid potential infinite loop
+			// if newpc < registers[0] {
+			// 	log.Fatalf("Terminating program due an attempt to jump back in the intructions section, pcsible infinite loop")
 			// }
-			registers[0] = newPos
+			registers[0] = newpc
 			continue loop
 
 		case Beqz:
-			reg, offset := memory[pos+1], memory[pos+2]
+			reg, offset := memory[pc+1], memory[pc+2]
 			if registers[reg] == 0 {
 				registers[0] += offset
 			}
 
 		case Addi:
-			registers[memory[pos+1]] += memory[pos+2]
+			registers[memory[pc+1]] += memory[pc+2]
 
 		case Subi:
-			registers[memory[pos+1]] -= memory[pos+2]
+			registers[memory[pc+1]] -= memory[pc+2]
 
 		default:
 			// panic(fmt.Sprintf("unknown operation %d"))
