@@ -47,8 +47,9 @@ func compute(memory []byte) {
 loop:
 	for {
 		pc := registers[0]
+		op := memory[pc]
 
-		switch memory[pc] {
+		switch op {
 		case Load:
 			registers[memory[pc+1]] = memory[memory[pc+2]]
 
