@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [C](./c/README.md)
-- [GO](./go/README.md)
+- [Clang](./clang/README.md)
+- [Golang](./golang/README.md)
 - [Unix](./unix/README.md)
 - [Algorithms](./algorithms/README.md)
