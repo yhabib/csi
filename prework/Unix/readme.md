@@ -327,3 +327,6 @@ The command `which` tells you location of another command. Eg:
 ```sh
 which bash
 ```
+
+## Links
+- [VIM basics](https://opensource.com/article/19/3/getting-started-vim)

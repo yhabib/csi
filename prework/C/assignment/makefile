@@ -1,4 +1,4 @@
-PROGRAM=ls-clone.out
+PROGRAM=ls.out
 
 clean: 
 	rm -rf $(PROGRAM)*
