@@ -59,7 +59,7 @@ loop:
 			if mp > 7 {
 				log.Fatalf("Terminating program due an attempt to overwritte instructions sections")
 			}
-			memory[memory[pc+2]] = registers[memory[pc+1]]
+			memory[mp] = registers[memory[pc+1]]
 
 		case Halt:
 			break loop
@@ -76,6 +76,7 @@ loop:
 			if newpc < 8 {
 				log.Fatalf("Terminating program due an attempt to jump out of the instructions section")
 			}
+
 			// This is not so straightforward, some instrucions betweeen new pcition and current one could avoid potential infinite loop
 			// if newpc < registers[0] {
 			// 	log.Fatalf("Terminating program due an attempt to jump back in the intructions section, pcsible infinite loop")
@@ -83,6 +84,7 @@ loop:
 			registers[0] = newpc
 			continue loop
 
+		// Branch Equal to Zero
 		case Beqz:
 			reg, offset := memory[pc+1], memory[pc+2]
 			if registers[reg] == 0 {
