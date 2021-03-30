@@ -5,33 +5,26 @@
 ; 	TIME
 
 global	sum_to_n
-
 section	.text
 
 sum_to_n:
-	; Initialize both counter and sum to 0	
-	mov rsi, 0
-	mov rax, 0
-
+		mov			rsi, 0 		;Initialize both counter and sum to 0	
+		mov			rax, 0
 loop:
-	; compare counter with given n
-	cmp rsi, rdi
-	; return if equal
-	je exit
-	; increment counter
-	inc rsi
-	; add current value to rax
-	add	rax, rsi
-	; iterate again
-	jmp loop
-
-sum_to_n_constant:
-	; N * (N+1) / 2
-	mov rax, rdi
-	inc rax
-	mul rdi
-	mov rsi, 2
-	div rsi
-
+		cmp 		rsi, rdi  ;compare counter with given n
+		je 			exit			;return if equal
+		inc 		rsi				;increment counter
+		add			rax, rsi	;add current value to rax
+		jmp 		loop			;iterate again
 exit:
-	ret
+		ret
+
+; Alternative
+sum_to_n_constant:
+		; N * (N+1) / 2
+		mov rax, rdi
+		inc rax
+		mul rdi
+		mov rsi, 2
+		div rsi
+		ret
