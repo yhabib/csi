@@ -23,6 +23,10 @@ nasm -fmacho64 <file>.asm && ld -L /Library/Developer/CommandLineTools/SDKs/MacO
 - `re r` register read
 - `re r <reg>` reads specific register
 - `n` step over
+- `br s -f <file> -l <line>` for the win.
+- `b <file>:<line>` for the win.
+- `br l`
+- `br del <num_of_breakpoint>` delete breakpoint
 
 
 
