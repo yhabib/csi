@@ -12,11 +12,17 @@ nasm -fmacho64 <file>.asm && ld -L /Library/Developer/CommandLineTools/SDKs/MacO
 
 
 ## Debugging w/ lldb
-1. `lldb <binary>`
+1. `lldb tests`ˇ
 2. `breakpoint set --file <.asm> --line <line>`
 3. `run`
 4. `thread continue | step-in | step-over | step-out`
 5. `register read`
+
+### Shortcuts
+- `c` continue
+- `re r` register read
+- `re r <reg>` reads specific register
+- `n` step over
 
 
 
