@@ -7,9 +7,15 @@ nasm -fmacho64 <file>.asm && ld -L /Library/Developer/CommandLineTools/SDKs/MacO
 
 ## Registers
 
-* `rdi` 1st argument
-* `rax` temporal reg, for return and `syscal`
+- `rax` temporal reg, for return and `syscal`
+- `rdi` 1st argument
+- `rsi`, `rdx`, `rcx`
+- `rsp` and `rbp` stack pointers
+- `flags`
 
+## Stack
+- Operations stack and pop handle inc/dec of rsp
+- At the end of a function, the stack must contain exactly the same number of elements as at the beginning 
 
 ## Debugging w/ lldb
 1. `lldb tests`ˇ
@@ -17,7 +23,7 @@ nasm -fmacho64 <file>.asm && ld -L /Library/Developer/CommandLineTools/SDKs/MacO
 3. `run`
 4. `thread continue | step-in | step-over | step-out`
 5. `register read`
-
+6. `exit` 
 ### Shortcuts
 - `c` continue
 - `re r` register read
@@ -32,3 +38,6 @@ nasm -fmacho64 <file>.asm && ld -L /Library/Developer/CommandLineTools/SDKs/MacO
 
 ## Resources
 - [LLDB](https://developer.apple.com/library/archive/documentation/IDEs/Conceptual/gdb_to_lldb_transition_guide/document/lldb-command-examples.html)
+- [Instruction set](https://www.felixcloutier.com/x86/)
+- [FLAGS](https://en.wikipedia.org/wiki/FLAGS_register)
+- [ASCII](https://en.wikipedia.org/wiki/ASCII#/media/File:USASCII_code_chart.png)
