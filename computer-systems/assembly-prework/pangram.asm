@@ -2,7 +2,7 @@
 section .text
 global pangram
 pangram:
-		xor 		ecx, 		ecx						;zeroes-out eax to receive the result
+		xor 		ecx, 		ecx						;zeroes-out ecx to receive the result
 		mov 		r9d, 		0x3ffffff
 
 .loop:
