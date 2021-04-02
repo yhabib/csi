@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 extern int fib(int n);
+extern int fib_iter(int n);
 extern int index(int *matrix, int rows, int cols, int rindex, int cindex);
 extern void transpose(int *in, int *out, int rows, int cols);
 extern float volume(float radius, float height);
@@ -18,6 +19,13 @@ void test_fib_2(void) { TEST_ASSERT_EQUAL(1, fib(2)); }
 void test_fib_3(void) { TEST_ASSERT_EQUAL(2, fib(3)); }
 void test_fib_10(void) { TEST_ASSERT_EQUAL(55, fib(10)); }
 void test_fib_12(void) { TEST_ASSERT_EQUAL(144, fib(12)); }
+
+void test_fib_iter_0(void) { TEST_ASSERT_EQUAL(0, fib_iter(0)); }
+void test_fib_iter_1(void) { TEST_ASSERT_EQUAL(1, fib_iter(1)); }
+void test_fib_iter_2(void) { TEST_ASSERT_EQUAL(1, fib_iter(2)); }
+void test_fib_iter_3(void) { TEST_ASSERT_EQUAL(2, fib_iter(3)); }
+void test_fib_iter_10(void) { TEST_ASSERT_EQUAL(55, fib_iter(10)); }
+void test_fib_iter_12(void) { TEST_ASSERT_EQUAL(144, fib_iter(12)); }
 
 void test_index_row(void) {
   int matrix[1][4] = {{1, 2, 3, 4}};
@@ -56,6 +64,14 @@ int main(void) {
     RUN_TEST(test_fib_3);
     RUN_TEST(test_fib_10);
     RUN_TEST(test_fib_12);
+
+
+    RUN_TEST(test_fib_iter_0);
+    RUN_TEST(test_fib_iter_1);
+    RUN_TEST(test_fib_iter_2);
+    RUN_TEST(test_fib_iter_3);
+    RUN_TEST(test_fib_iter_10);
+    RUN_TEST(test_fib_iter_12);
 
     // RUN_TEST(test_index_row);
     // RUN_TEST(test_index_col);
