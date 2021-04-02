@@ -16,10 +16,9 @@ ALL_CFLAGS = -std=c99 -fPIE -m64 $(CFLAGS)
 ALL_LDFLAGS += $(LDFLAGS)
 ALL_ASFLAGS += $(ASFLAGS)
 
-EXCLUSIONS = hello_linux.o hello_mac.o
 C_OBJS = $(patsubst %.c,%.o,$(wildcard *.c))
 AS_OBJS = $(patsubst %.asm,%.o,$(wildcard *.asm))
-ALL_OBJS = $(filter-out $(EXCLUSIONS),$(C_OBJS) $(AS_OBJS) vendor/unity.o)
+ALL_OBJS = $(C_OBJS) $(AS_OBJS) vendor/unity.o
 
 CC_CMD = $(CC) $(ALL_CFLAGS) -c -o $@ $<
 
