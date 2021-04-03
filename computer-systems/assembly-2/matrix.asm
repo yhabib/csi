@@ -12,9 +12,7 @@ index:
 	; rdx: cols
 	; rcx: rindex
 	; r8 : cindex
-	mov rax, rdx	
-	mul rcx								;rdx*rcx
-	add rax, r8						;rdx*rcx + r8
-	lea rax, [4*rax + rdi];4(rdx*rcx + r8) + rdi
-	mov rax, [rax]				;get value from address
+	imul rdx, rcx;rdx*rcx
+	add rdx, r8;rdx*rcx + r8
+	mov rax, [4*rdx + rdi];4(rdx*rcx + r8) + rdi
 	ret
