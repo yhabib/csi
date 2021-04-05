@@ -33,8 +33,7 @@ func (c Clock) String() string {
 
 func (c Clock) Add(minutes int) Clock {
 	c.minute += minutes
-	c.recalculateTime()
-	return c
+	return New(c.hour, c.minute)
 }
 
 func (c Clock) Subtract(minutes int) Clock {
