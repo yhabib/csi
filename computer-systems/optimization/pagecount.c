@@ -5,11 +5,13 @@
 #define TEST_LOOPS 10000000
 
 // Page to PageFrame
-uint64_t pagecount(uint64_t memory_size, uint64_t page_size) {
+uint64_t pagecount(uint64_t memory_size, uint64_t page_size)
+{
   return memory_size >> page_size;
 }
 
-int main (int argc, char** argv) {
+int main(int argc, char **argv)
+{
   clock_t baseline_start, baseline_end, test_start, test_end;
   uint64_t memory_size, page_size;
   double clocks_elapsed, time_elapsed;
@@ -19,25 +21,27 @@ int main (int argc, char** argv) {
   uint64_t psizes[] = {12, 16, 32};
 
   baseline_start = clock();
-  for (i = 0; i < TEST_LOOPS; i++) {
+  for (i = 0; i < TEST_LOOPS; i++)
+  {
     memory_size = msizes[i % 3];
     page_size = psizes[i % 3];
     ignore += 1 + memory_size +
-              page_size; // so that this loop isn't just optimized away
+              (1L << page_size); // so that this loop isn't just optimized away
   }
   baseline_end = clock();
 
   test_start = clock();
-  for (i = 0; i < TEST_LOOPS; i+=3) {
+  for (i = 0; i < TEST_LOOPS; i += 3)
+  {
     memory_size = msizes[0];
     page_size = psizes[0];
-    ignore += pagecount(memory_size, page_size) + memory_size + page_size;
+    ignore += pagecount(memory_size, page_size) + memory_size + (1L << page_size);
     memory_size = msizes[1];
     page_size = psizes[1];
-    ignore += pagecount(memory_size, page_size) + memory_size + page_size;
+    ignore += pagecount(memory_size, page_size) + memory_size + (1L << page_size);
     memory_size = msizes[2];
     page_size = psizes[2];
-    ignore += pagecount(memory_size, page_size) + memory_size + page_size;
+    ignore += pagecount(memory_size, page_size) + memory_size + (1L << page_size);
   }
   test_end = clock();
 
@@ -48,4 +52,3 @@ int main (int argc, char** argv) {
          time_elapsed * 1e9 / TEST_LOOPS);
   return ignore;
 }
-
