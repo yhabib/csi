@@ -13,3 +13,7 @@ Optimizations:
 PAGE_NUM = ((MEM >> PS) >> 2) + ((MEM >> PS) >> 4) + 1
 PS = ((PAGE_SIZE >> 4) + (PAGE_SIZE >> 2) + 1)
 ```
+
+
+## Resources
+- [Instruments](https://stackoverflow.com/questions/11445619/profiling-c-on-mac-os-x)
