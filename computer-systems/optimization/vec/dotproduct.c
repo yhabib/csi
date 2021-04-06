@@ -1,13 +1,19 @@
 #include "vec.h"
 
+data_t dotproduct(vec_ptr u, vec_ptr v)
+{
+   // Multiple accumulators -> parallelism
+   data_t sum = 0, sum2 = 0;
+   // Moves this out from the loop -> to avoid calculating it with each iteration
+   int length = vec_length(u);
+   // Pointer to the data so I cana access it directly
+   data_t *data_u = get_vec_start(u);
+   data_t *data_v = get_vec_start(v);
 
-data_t dotproduct(vec_ptr u, vec_ptr v) {
-   data_t sum = 0, u_val, v_val;
-
-   for (long i = 0; i < vec_length(u); i++) { // we can assume both vectors are same length
-        get_vec_element(u, i, &u_val);
-        get_vec_element(v, i, &v_val);
-        sum += u_val * v_val;
-   }   
-   return sum;
+   for (long i = 0; i < length; i += 2)
+   { // we can assume both vectors are same length
+      sum += data_u[i] * data_v[i];
+      sum2 += data_u[i+1] * data_v[i+1];
+   }
+   return sum + sum2;
 }
