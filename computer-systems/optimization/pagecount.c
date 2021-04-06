@@ -28,9 +28,15 @@ int main (int argc, char** argv) {
   baseline_end = clock();
 
   test_start = clock();
-  for (i = 0; i < TEST_LOOPS; i++) {
-    memory_size = msizes[i % 3];
-    page_size = psizes[i % 3];
+  for (i = 0; i < TEST_LOOPS; i+=3) {
+    memory_size = msizes[0];
+    page_size = psizes[0];
+    ignore += pagecount(memory_size, page_size) + memory_size + page_size;
+    memory_size = msizes[1];
+    page_size = psizes[1];
+    ignore += pagecount(memory_size, page_size) + memory_size + page_size;
+    memory_size = msizes[2];
+    page_size = psizes[2];
     ignore += pagecount(memory_size, page_size) + memory_size + page_size;
   }
   test_end = clock();
