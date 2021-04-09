@@ -49,6 +49,20 @@ My supposition here is that v1 makes far better use of memory location, by acces
 * From assembly point of view number of instructions should be the same
 * Number of misses also make sense, the factor 16 is due the fact that _cache lines_ are 64 bytes, and because we use integers(4B) means that for each access in the second version it will use only one element out of the 16 in the cache.
 
+
+## Matrix multiply
+Optimizations:
+* Loop unrolling -> The more we do it the better specially because of the next two optimizations
+* Cache leveraging of `b[k][j]`?
+* Parallelism
+
+Best result:
+```
+Naive: 0.743s
+Fast: 0.298s
+2.50x speedup
+```
+
 ## Tools
 ### Multipass
 * `multipass shell <id>`
