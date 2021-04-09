@@ -27,23 +27,21 @@ void matrix_multiply(double **C, double **A, double **B, int a_rows, int a_cols,
 void fast_matrix_multiply(double **c, double **a, double **b, int a_rows,
                           int a_cols, int b_cols) {
   int i,j,k;
-  double acc1, acc2, acc3,acc4, acc5, temp;
-  for (i = 0; i < a_rows-4; i+=5) {
+  double acc1, acc2, acc3, acc4, temp;
+  for (i = 0; i < a_rows-3; i+=4) {
     for (j = 0; j < b_cols; j++) {
-      acc1 = 0, acc2 = 0, acc3 = 0, acc4 = 0, acc5 = 0;
+      acc1 = 0, acc2 = 0, acc3 = 0, acc4 = 0;
       for (k = 0; k < a_cols; k++) {
         temp = b[k][j];
         acc1 += a[i][k] * temp;
         acc2 += a[i+1][k] * temp;
         acc3 += a[i+2][k] * temp;
         acc4 += a[i+3][k] * temp;
-        acc5 += a[i+4][k] * temp;
       }
       c[i][j] = acc1;
       c[i+1][j] = acc2;
       c[i+2][j] = acc3;
       c[i+3][j] = acc4;
-      c[i+4][j] = acc5;
     }
   }
 
