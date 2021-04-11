@@ -65,10 +65,13 @@ Fast: 0.298s
 
 ## Tools
 ### Multipass
+* `multipass launch --name <name>`
 * `multipass shell <id>`
 * `multipass mount $HOME/<path> <id>:<path>`
 * `multipass start <id>`
 * `multipass stop <id>`
+* `multipass delete <id>`
+* `multipass purge`
 
 ### Valgrind
 * Compile w/ loggin informtion: `gcc -g <file> -o <dest_file>` also could be beneficial with low level optimization: `gcc -g -O0 <file> -o <dest_file>`
