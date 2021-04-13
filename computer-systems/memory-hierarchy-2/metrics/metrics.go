@@ -6,98 +6,62 @@ import (
 	"math"
 	"os"
 	"strconv"
-	"time"
 )
 
 type (
 	UserId  int
-	UserMap map[UserId]*User
 	UserAge uint8
 )
 
-type Address struct {
-	fullAddress string
-	zip         int
-}
-
-type DollarAmount struct {
-	dollars, cents uint64
-}
-
-type Payment struct {
-	amount DollarAmount
-	time   time.Time
-}
-
-type User struct {
-	id       UserId
-	name     string
-	age      uint8
-	address  Address
-	payments []Payment
-}
-
 var (
-	userAge       = []UserAge{}
-	userIdToCents = make(map[UserId][]int)
+	ages     = []UserAge{}
+	payments = []int{}
+
+	// Leveraging that we know these values and compiler doesnt'
+	numUsers        = 100_000
+	numPayments     = 1_000_000
+	maxPaymentCents = 100_000_000
 )
 
-func AverageAge(users UserMap) float64 {
-	var average float64
+// Worst case scenario: NumUsers * MaxAge = 12_000_000 32 bits are enough to hold it
+func AverageAge() float64 {
+	var sum uint32
 	var i int
-	length := len(userAge)
-
-	for i = 0; i < length; i++ {
-		average += (float64(userAge[i]) - average) / float64(i+1)
+	// By writing the loop in this way rather than the traditional for i=0;i<numUsers; i++ it gets 6k faster
+	for i < numUsers {
+		sum += uint32(ages[i])
+		i++
 	}
-
-	return average
+	return float64(sum) / float64(numUsers)
 }
 
-func AveragePaymentAmount(users UserMap) float64 {
-	var average float64
-	count := 0
-	// for _, u := range users {
-	// 	for _, p := range u.payments {
-	// 		count += 1
-	// 		amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
-	// 		average += (amount - average) / count
-	// 	}
-	// }
-	for _, payments := range userIdToCents {
-		for _, cents := range payments {
-			count++
-			average += (float64(cents) - average) / float64(count)
-		}
+// Worst case scenario: NumPayments * MaxPaymentCents < int64
+func AveragePaymentAmount() float64 {
+	var sum int64
+	var i int
+
+	for i < numPayments {
+		sum += int64(payments[i])
+		i++
 	}
-	return average / 100
+	return float64(sum) / float64(100*numPayments)
 }
 
 // Compute the standard deviation of payment amounts
-func StdDevPaymentAmount(users UserMap) float64 {
-	mean := AveragePaymentAmount(users)
+func StdDevPaymentAmount() float64 {
+	mean := AveragePaymentAmount()
 	squaredDiffs := 0.0
 	count := 0
-	// for _, u := range users {
-	// 	for _, p := range u.payments {
-	// 		count += 1
-	// 		amount := float64(p.amount.dollars) + float64(p.amount.cents)/100
-	// 		diff := amount - mean
-	// 		squaredDiffs += diff * diff
-	// 	}
-	// }
 
-	for _, payments := range userIdToCents {
-		for _, cents := range payments {
-			count++
-			diff := float64(cents/100) - mean
-			squaredDiffs += diff * diff
-		}
+	for _, cents := range payments {
+		count++
+		diff := float64(cents) - mean
+		squaredDiffs += diff * diff
 	}
 	return math.Sqrt(squaredDiffs / float64(count))
 }
 
-func LoadData() UserMap {
+func LoadData() {
 	f, err := os.Open("users.csv")
 	if err != nil {
 		log.Fatalln("Unable to read users.csv", err)
@@ -108,16 +72,9 @@ func LoadData() UserMap {
 		log.Fatalln("Unable to parse users.csv as csv", err)
 	}
 
-	users := make(UserMap, len(userLines))
 	for _, line := range userLines {
-		id, _ := strconv.Atoi(line[0])
-		name := line[1]
 		age, _ := strconv.Atoi(line[2])
-		address := line[3]
-		zip, _ := strconv.Atoi(line[3])
-		users[UserId(id)] = &User{UserId(id), name, uint8(age), Address{address, zip}, []Payment{}}
-		userAge = append(userAge, UserAge(age))
-
+		ages = append(ages, UserAge(age))
 	}
 
 	f, err = os.Open("payments.csv")
@@ -131,15 +88,7 @@ func LoadData() UserMap {
 	}
 
 	for _, line := range paymentLines {
-		userId, _ := strconv.Atoi(line[2])
 		paymentCents, _ := strconv.Atoi(line[0])
-		datetime, _ := time.Parse(time.RFC3339, line[1])
-		users[UserId(userId)].payments = append(users[UserId(userId)].payments, Payment{
-			DollarAmount{uint64(paymentCents / 100), uint64(paymentCents % 100)},
-			datetime,
-		})
-		userIdToCents[UserId(userId)] = append(userIdToCents[UserId(userId)], paymentCents)
+		payments = append(payments, paymentCents)
 	}
-
-	return users
 }

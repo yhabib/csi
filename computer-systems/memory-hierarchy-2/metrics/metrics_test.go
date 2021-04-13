@@ -6,12 +6,11 @@ import (
 )
 
 func BenchmarkMetrics(b *testing.B) {
-	users := LoadData()
-
+	LoadData()
 	b.Run("Average age", func(b *testing.B) {
 		actual := 0.0
 		for n := 0; n < b.N; n++ {
-			actual = AverageAge(users)
+			actual = AverageAge()
 		}
 		expected := 59.62
 		if math.IsNaN(actual) || math.Abs(actual-expected) > 0.01 {
@@ -22,7 +21,7 @@ func BenchmarkMetrics(b *testing.B) {
 	b.Run("Average payment", func(b *testing.B) {
 		actual := 0.0
 		for n := 0; n < b.N; n++ {
-			actual = AveragePaymentAmount(users)
+			actual = AveragePaymentAmount()
 		}
 
 		expected := 499850.559
@@ -34,12 +33,11 @@ func BenchmarkMetrics(b *testing.B) {
 	b.Run("Payment stddev", func(b *testing.B) {
 		actual := 0.0
 		for n := 0; n < b.N; n++ {
-			actual = StdDevPaymentAmount(users)
+			actual = StdDevPaymentAmount()
 		}
 		expected := 288684.850
 		if math.IsNaN(actual) || math.Abs(actual-expected) > 0.01 {
 			b.Fatalf("Expected standard deviation to be around %.2f, not %.3f", expected, actual)
 		}
 	})
-
 }

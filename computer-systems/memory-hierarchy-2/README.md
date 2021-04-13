@@ -54,11 +54,28 @@ PASS
 ok      metrics 6.314s
 ```
 
-arrays
+arrays everywhere
 ```
 goos: darwin
 goarch: amd64
 pkg: metrics
 cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
-BenchmarkMetrics/Average_age-12                     2415            506341 ns/op
+BenchmarkMetrics/Average_age-12                     1993            553905 ns/op
+BenchmarkMetrics/Average_payment-12                  214           5614393 ns/op
+BenchmarkMetrics/Payment_stddev-12                   169           6976766 ns/op
+PASS
+ok      metrics 5.585s
+```
+
+Leverage the fact we now the limits of the progra:
+```
+goos: darwin
+goarch: amd64
+pkg: metrics
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkMetrics/Average_age-12                    20980             56746 ns/op
+BenchmarkMetrics/Average_payment-12                 1683            650710 ns/op
+BenchmarkMetrics/Payment_stddev-12                   631           1851020 ns/op
+PASS
+ok      metrics 4.778s
 ```
