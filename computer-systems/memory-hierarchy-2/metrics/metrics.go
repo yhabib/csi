@@ -26,11 +26,11 @@ var (
 // Worst case scenario: NumUsers * MaxAge = 12_000_000 32 bits are enough to hold it
 func AverageAge() float64 {
 	var sum uint32
-	var i int
+
 	// By writing the loop in this way rather than the traditional for i=0;i<numUsers; i++ it gets 6k faster
-	for i < numUsers {
-		sum += uint32(ages[i])
-		i++
+	// More crazy. range is more performant than while
+	for _, age := range ages {
+		sum += uint32(age)
 	}
 	return float64(sum) / float64(numUsers)
 }
@@ -38,11 +38,9 @@ func AverageAge() float64 {
 // Worst case scenario: NumPayments * MaxPaymentCents < int64
 func AveragePaymentAmount() float64 {
 	var sum int64
-	var i int
 
-	for i < numPayments {
-		sum += int64(payments[i])
-		i++
+	for _, cents := range payments {
+		sum += int64(cents)
 	}
 	return float64(sum) / float64(100*numPayments)
 }
@@ -55,7 +53,7 @@ func StdDevPaymentAmount() float64 {
 
 	for _, cents := range payments {
 		count++
-		diff := float64(cents) - mean
+		diff := float64(cents/100) - mean
 		squaredDiffs += diff * diff
 	}
 	return math.Sqrt(squaredDiffs / float64(count))

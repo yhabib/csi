@@ -79,3 +79,10 @@ BenchmarkMetrics/Payment_stddev-12                   631           1851020 ns/op
 PASS
 ok      metrics 4.778s
 ```
+
+for range faster than while loop 
+```
+BenchmarkMetrics/Average_age-12                    35510             32810 ns/op
+BenchmarkMetrics/Average_payment-12                 2060            587168 ns/op
+BenchmarkMetrics/Payment_stddev-12                   624           1896523 ns/op
+```
