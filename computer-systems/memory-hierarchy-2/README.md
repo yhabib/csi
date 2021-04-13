@@ -41,15 +41,24 @@ PASS
 ok      metrics 5.812s
 ````
 
-map of userId to cents
+maps
 ```
 goos: darwin
 goarch: amd64
 pkg: metrics
 cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
 BenchmarkMetrics/Average_age-12                      940           1151987 ns/op
-BenchmarkMetrics/Average_payment-12                   98          11117761 ns/op
-BenchmarkMetrics/Payment_stddev-12                    32          37466858 ns/op
+BenchmarkMetrics/Average_payment-12                  100          11261466 ns/op
+BenchmarkMetrics/Payment_stddev-12                    51          23030894 ns/op
 PASS
 ok      metrics 6.314s
+```
+
+arrays
+```
+goos: darwin
+goarch: amd64
+pkg: metrics
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkMetrics/Average_age-12                     2415            506341 ns/op
 ```

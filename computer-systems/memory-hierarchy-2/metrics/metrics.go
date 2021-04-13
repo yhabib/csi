@@ -38,24 +38,20 @@ type User struct {
 }
 
 var (
-	userAge       = make(map[UserId]UserAge)
+	userAge       = []UserAge{}
 	userIdToCents = make(map[UserId][]int)
 )
 
 func AverageAge(users UserMap) float64 {
-	var average float32
-	count := 0
-	// for _, u := range users {
-	// 	count += 1
-	// 	average += (float64(u.age) - average) / count
-	// }
+	var average float64
+	var i int
+	length := len(userAge)
 
-	for _, age := range userAge {
-		count++
-		average += (float32(age) - average) / float32(count)
+	for i = 0; i < length; i++ {
+		average += (float64(userAge[i]) - average) / float64(i+1)
 	}
 
-	return float64(average)
+	return average
 }
 
 func AveragePaymentAmount(users UserMap) float64 {
@@ -120,7 +116,7 @@ func LoadData() UserMap {
 		address := line[3]
 		zip, _ := strconv.Atoi(line[3])
 		users[UserId(id)] = &User{UserId(id), name, uint8(age), Address{address, zip}, []Payment{}}
-		userAge[UserId(id)] = UserAge(age)
+		userAge = append(userAge, UserAge(age))
 
 	}
 
