@@ -17,6 +17,9 @@ func getInt(input interface{}) int {
 	return *(*int)(ptr.data)
 }
 
+func getMethods(input interface{}) {
+}
+
 func main() {
 	var a interface{} = 2
 	var b interface{} = 3
