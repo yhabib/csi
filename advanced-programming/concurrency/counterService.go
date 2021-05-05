@@ -46,17 +46,26 @@ func (s *mutexService) getNext() uint64 {
 // handle getNext() calls by making “requests” and receiving “responses” on two separate channels
 
 type goService struct {
-	counter uint64
+	req chan<- struct{}
+	res <-chan uint64
+}
+
+func newGoService() *goService {
+	req := make(chan struct{})
+	res := make(chan uint64)
+	go func(v uint64) {
+		for {
+			<-req
+			v++
+			res <- v
+		}
+	}(0)
+	return &goService{req, res}
 }
 
 func (s *goService) getNext() uint64 {
-	s.counter++
-	return s.counter
-}
-
-func monitorGetNext() {
-	in := make(chan<- int)
-	out := make(<-chan int)
+	s.req <- struct{}{}
+	return <-s.res
 }
 
 func main() {
@@ -67,6 +76,7 @@ func main() {
 	services["naive"] = &naiveService{}
 	services["atomic"] = &atomicService{}
 	services["mutex"] = &mutexService{}
+	services["channel"] = &mutexService{}
 
 	for k := range services {
 		// From GoPL 8.5 -> We wait for each service to finish
