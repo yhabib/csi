@@ -24,6 +24,10 @@ func (c *coordinator) logState() {
 	fmt.Printf("leader = %q\n", c.leader)
 }
 
+func (c *coordinator) logUnsafeState() {
+	fmt.Printf("leader = %q\n", c.leader)
+}
+
 func (c *coordinator) setLeader(leader string, shouldLog bool) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
@@ -31,7 +35,7 @@ func (c *coordinator) setLeader(leader string, shouldLog bool) {
 	c.leader = leader
 
 	if shouldLog {
-		c.logState()
+		c.logUnsafeState()
 	}
 }
 
@@ -40,3 +44,7 @@ func main() {
 	c.logState()
 	c.setLeader("us-west", true)
 }
+
+// Problem: Deadlock -> setLeader acquires the lock but logState tries to lock again
+// 		In go Locks are not re-entering
+// Solution: Centralizing locking

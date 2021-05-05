@@ -14,7 +14,7 @@ type counter struct {
 	count int
 }
 
-func safeIncrement(lock sync.Mutex, c *counter) {
+func safeIncrement(lock *sync.Mutex, c *counter) {
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -34,7 +34,7 @@ func main() {
 			defer wg.Done()
 
 			for j := 0; j < numIncrements; j++ {
-				safeIncrement(globalLock, c)
+				safeIncrement(&globalLock, c)
 			}
 		}()
 	}
@@ -42,3 +42,8 @@ func main() {
 	wg.Wait()
 	fmt.Println(c.count)
 }
+
+// Problem: Lock to safeIncrement has to be passed as a pointer otherwise it will
+//  create a copy of it
+// Solution: Pass the address
+// Golang does the de-referencing of these pointers automatically??

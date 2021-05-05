@@ -68,3 +68,8 @@ func main() {
 
 	wg.Wait()
 }
+
+// Problem: takeSnapshot acquires the Lock, then updateConnection tries to acquire but has to wait, and then
+//		logState also tries to acquire the lock
+// Solution: Non locking versions of logState OR wg.Wait() in line 61, so updateConnection will never be called
+// before all the Read operations are done

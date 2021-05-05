@@ -29,7 +29,7 @@ func query(endpoint string) string {
 // response (this approach increases the amount of traffic but
 // significantly improves "tail latency")
 func parallelQuery(endpoints []string) string {
-	results := make(chan string)
+	results := make(chan string, 3)
 	for i := range endpoints {
 		go func(i int) {
 			results <- query(endpoints[i])
@@ -39,7 +39,7 @@ func parallelQuery(endpoints []string) string {
 }
 
 func main() {
-	var endpoints = []string{
+	endpoints := []string{
 		"https://fakeurl.com/endpoint",
 		"https://mirror1.com/endpoint",
 		"https://mirror2.com/endpoint",
@@ -52,3 +52,7 @@ func main() {
 		time.Sleep(delay)
 	}
 }
+
+// Problem: Leaking gorooutines. As soon as the first goroutine is done then it returns, so there is nothing
+// 		to drawn the other goroutines
+// Solution: Buffered channel with size 3
