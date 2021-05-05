@@ -7,7 +7,7 @@ import (
 const numTasks = 3
 
 func main() {
-	var done chan struct{}
+	var done chan struct{} = make(chan struct{})
 	for i := 0; i < numTasks; i++ {
 		go func() {
 			fmt.Println("running task...")
@@ -23,3 +23,6 @@ func main() {
 	}
 	fmt.Printf("all %d tasks done!\n", numTasks)
 }
+
+// Problem: channel is not initialized
+// Solution: initialize it
