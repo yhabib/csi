@@ -53,13 +53,14 @@ type goService struct {
 func newGoService() *goService {
 	req := make(chan struct{})
 	res := make(chan uint64)
-	go func(v uint64) {
+	counter := uint64(0)
+	go func(c uint64) {
 		for {
 			<-req
-			v++
-			res <- v
+			c++
+			res <- c
 		}
-	}(0)
+	}(counter)
 	return &goService{req, res}
 }
 
@@ -70,25 +71,32 @@ func (s *goService) getNext() uint64 {
 
 func main() {
 	numOfGoRoutines := 50
-	var maxValue uint64 = 50
+	numOfIterationsPerGoRoutine := 10
+	var maxValue uint64 = uint64(numOfGoRoutines * numOfIterationsPerGoRoutine)
 
 	services := make(map[string]counterService)
 	services["naive"] = &naiveService{}
 	services["atomic"] = &atomicService{}
 	services["mutex"] = &mutexService{}
-	services["channel"] = &mutexService{}
+	services["channel"] = newGoService()
 
 	for k := range services {
 		// From GoPL 8.5 -> We wait for each service to finish
 		var wg sync.WaitGroup
-		count := 0
+
 		for i := 0; i < numOfGoRoutines; i++ {
 			wg.Add(1)
-			count++
-			// worker
 			go func(k string) {
 				defer wg.Done()
-				services[k].getNext()
+				// Shouldn't this increase monotonically
+				var prevValue uint64 = 0
+				for j := 0; j < numOfIterationsPerGoRoutine; j++ {
+					newValue := services[k].getNext()
+					if newValue-prevValue != 1 {
+						fmt.Print("No monotonically incremented")
+					}
+					prevValue = newValue
+				}
 			}(k)
 		}
 
