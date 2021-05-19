@@ -5,8 +5,6 @@ import (
 	"unsafe"
 )
 
-var 
-
 // An unsafe.Pointer may also be converted to a uintptr that holds
 // the pointer’s numeric value, letting us perform arithmetic on addresses.
 // but then what is &str?? a pointer to the string struct of two words?
