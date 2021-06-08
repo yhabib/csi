@@ -6,7 +6,25 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
+	"sort"
 )
+
+type TCPSegmentHeader struct {
+	SrcPort                   uint16
+	DstPort                   uint16
+	SeqNum                    uint32
+	AckNum                    uint32
+	DataOffset_Reserved_Flags [2]byte
+	WindowSize                uint16
+	Checksum                  uint16
+	UrgentPtr                 uint16
+}
+
+type HttpPacket struct {
+	Id   uint32
+	Data []byte
+}
 
 func handleError(err error, msg string) {
 	if err != nil {
@@ -132,21 +150,8 @@ func parseIp(f *os.File) int64 {
 	return int64(IHL)
 }
 
-type TCPSegmentHeader struct {
-	SrcPort                   uint16
-	DstPort                   uint16
-	SeqNum                    uint32
-	AckNum                    uint32
-	DataOffset_Reserved_Flags [2]byte
-	WindowSize                uint16
-	Checksum                  uint16
-	UrgentPtr                 uint16
-}
-
-func parseTcp(f *os.File) int64 {
+func parseTcp(f *os.File) (int64, TCPSegmentHeader) {
 	fmt.Println("Parsing TCP Segment:")
-	offset, _ := f.Seek(0, 1)
-	fmt.Println(offset)
 	tcpHeader := new(TCPSegmentHeader)
 	binary.Read(f, binary.BigEndian, tcpHeader)
 	dataOffset := (tcpHeader.DataOffset_Reserved_Flags[0] >> 4) * 4
@@ -156,14 +161,28 @@ func parseTcp(f *os.File) int64 {
 	fmt.Printf("	Sequenze Number: %d \n", tcpHeader.SeqNum)
 	fmt.Printf("	Header Size: %dB \n", dataOffset)
 	fmt.Printf("	Offset Size: %dB \n", offsetSize)
-	offset, _ = f.Seek(int64(offsetSize), 1)
-	fmt.Println(offset)
-	return int64(dataOffset)
+	f.Seek(int64(offsetSize), 1)
+
+	return int64(dataOffset), *tcpHeader
 }
 
-func parseHTTP(f *os.File, payloadSize int64) {
-	fmt.Printf("	Payload Size: %dB \n", payloadSize)
-	f.Seek(payloadSize, 1)
+type ById []HttpPacket
+
+func (a ById) Len() int           { return len(a) }
+func (a ById) Less(i, j int) bool { return a[i].Id < a[j].Id }
+func (a ById) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+
+func sortTcpResponse(imagePackets []HttpPacket) []byte {
+	sort.Sort(ById(imagePackets))
+	resp := make([]byte, 1000)
+	for i, pkt := range imagePackets {
+		if i > 0 && (imagePackets[i-1].Id == pkt.Id) {
+			continue
+		}
+		resp = append(resp, pkt.Data...)
+	}
+
+	return resp
 }
 
 func main() {
@@ -172,6 +191,7 @@ func main() {
 	defer f.Close()
 	order := parsePcapHeader(f)
 	numOfPackets := 0
+	httpPackets := make([]HttpPacket, 100)
 
 	for {
 		fmt.Println("----------------------------------------------------------------")
@@ -182,13 +202,29 @@ func main() {
 		handleError(err, "Reading packet")
 		ethHeaderSize := parseEthernet(f)
 		ipHeaderSize := parseIp(f)
-		tcpHeaderSize := parseTcp(f)
+		tcpHeaderSize, tcpHeader := parseTcp(f)
 		httpBytes := packetSize - ethHeaderSize - ipHeaderSize - tcpHeaderSize
-		parseHTTP(f, httpBytes)
+
+		tcpData := make([]byte, httpBytes)
+		f.Read(tcpData)
+		if tcpHeader.SrcPort == 80 {
+			httpPackets = append(httpPackets, HttpPacket{
+				Id:   tcpHeader.SeqNum,
+				Data: tcpData,
+			})
+		}
 		numOfPackets++
 	}
+	data := sortTcpResponse(httpPackets)
+	respStr := string(data)
+	emptyLine := regexp.MustCompile(`\r\n\r\n`)
+	parts := emptyLine.Split(respStr, 2)
+	header := parts[0]
+	image := []byte(parts[1])
+	os.WriteFile("img.jpg", image, 0666)
 
 	fmt.Println("----------------------------------------------------------------")
 	fmt.Println("Summary: ")
+	fmt.Printf("%s\n", header)
 	fmt.Println("	Number of packets: ", numOfPackets)
 }
