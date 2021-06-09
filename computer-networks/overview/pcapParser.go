@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"sort"
 )
 
@@ -166,14 +166,10 @@ func parseTcp(f *os.File) (int64, TCPSegmentHeader) {
 	return int64(dataOffset), *tcpHeader
 }
 
-type ById []HttpPacket
-
-func (a ById) Len() int           { return len(a) }
-func (a ById) Less(i, j int) bool { return a[i].Id < a[j].Id }
-func (a ById) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-
 func sortTcpResponse(imagePackets []HttpPacket) []byte {
-	sort.Sort(ById(imagePackets))
+	sort.Slice(imagePackets, func(i, j int) bool {
+		return imagePackets[i].Id < imagePackets[j].Id
+	})
 	resp := make([]byte, 1000)
 	for i, pkt := range imagePackets {
 		if i > 0 && (imagePackets[i-1].Id == pkt.Id) {
@@ -216,15 +212,13 @@ func main() {
 		numOfPackets++
 	}
 	data := sortTcpResponse(httpPackets)
-	respStr := string(data)
-	emptyLine := regexp.MustCompile(`\r\n\r\n`)
-	parts := emptyLine.Split(respStr, 2)
+	parts := bytes.SplitN(data, []byte{'\r', '\n', '\r', '\n'}, 2)
 	header := parts[0]
 	image := []byte(parts[1])
 	os.WriteFile("img.jpg", image, 0666)
 
 	fmt.Println("----------------------------------------------------------------")
 	fmt.Println("Summary: ")
-	fmt.Printf("%s\n", header)
 	fmt.Println("	Number of packets: ", numOfPackets)
+	fmt.Printf("	%s\n", header)
 }
