@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"net"
+	"strings"
 )
 
 const (
@@ -21,7 +23,7 @@ type HEADER struct {
 }
 
 type QUESTION struct {
-	QNAME  [4]byte
+	QNAME  []byte // As long as required
 	QTYPE  uint16 // 1 is A
 	QCLASS uint16 // 1 is IN
 }
@@ -50,27 +52,38 @@ func checkErr(err error) {
 }
 
 func main() {
-	// init
+	hostname := "bradfield.com"
+
 	conn, err := net.Dial("udp", GOOGLE_DNS)
 	checkErr(err)
 	fmt.Println(conn)
 	dnsHeader := HEADER{1, [2]byte{0x01, 0x00}, 1, 0, 0, 0}
 
-	// msg, _ := strconv.Atoi("www.bradfield.com")
-	// dnsType, _ := strconv.Atoi("A")
-	// dnsClass, _ := strconv.Atoi("IN")
-	// fmt.Println(msg)
-	// fmt.Println(dnsType)
-	// fmt.Println(dnsClass)
-	// dnsQuestion := QUESTION{uint32(msg), uint16(dnsType), uint16(dnsClass)}
-	// msg := []byte("bradfield.com")
-	msg := [4]byte{0xFF, 0xFF, 0xFF, 0xFF}
-	fmt.Println(msg)
+	parts := strings.Split(hostname, ".")
+	msg := []byte{}
+	var network bytes.Buffer
+	binary.Write(&network, binary.BigEndian, dnsHeader)
+	// add message
+	for _, v := range parts {
+		size := len(v)
+		msg = append(msg, byte(size))
+		for _, r := range v {
+			msg = append(msg, byte(r))
+		}
+	}
+	msg = append(msg, byte(0x00))
+	question := QUESTION{msg, 1, 1}
+	// Query message delimeter
+	binary.Write(&network, binary.BigEndian, question.QNAME)
+	binary.Write(&network, binary.BigEndian, question.QCLASS)
+	binary.Write(&network, binary.BigEndian, question.QTYPE)
+	binary.Write(&network, binary.BigEndian, RESOURCE_RECORD{})
+	binary.Write(&network, binary.BigEndian, RESOURCE_RECORD{})
+	binary.Write(&network, binary.BigEndian, RESOURCE_RECORD{})
 
-	dnsQuestion := QUESTION{msg, 1, 1}
-	record := RESOURCE_RECORD{}
-	query := QUERY{dnsHeader, dnsQuestion, record, record, record}
-	binary.Write(conn, binary.BigEndian, query)
+	// binary.Write(conn, binary.BigEndian, network)
+
+	conn.Write(network.Bytes())
 
 	defer conn.Close()
 }
