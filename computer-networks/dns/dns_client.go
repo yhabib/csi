@@ -65,11 +65,8 @@ func main() {
 	binary.Write(&network, binary.BigEndian, dnsHeader)
 	// add message
 	for _, v := range parts {
-		size := len(v)
-		msg = append(msg, byte(size))
-		for _, r := range v {
-			msg = append(msg, byte(r))
-		}
+		msg = append(msg, byte(len(v)))
+		msg = append(msg, []byte(v)...)
 	}
 	msg = append(msg, byte(0x00))
 	question := QUESTION{msg, 1, 1}
