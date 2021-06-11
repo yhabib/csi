@@ -20,22 +20,24 @@ func checkErr(err error) {
 }
 
 func main() {
-	// TODO: Read from command line
 	hostname := os.Args[1]
 	dnsType := os.Args[2]
 	fmt.Printf("Making query: %s for hostname: %s\n", dnsType, hostname)
 
 	conn, err := net.Dial("udp", GOOGLE_DNS)
 	checkErr(err)
+	defer conn.Close()
 
 	var network bytes.Buffer
 	dns.BuildQuery(hostname, dnsType, &network)
-	conn.Write(network.Bytes())
+	_, err = conn.Write(network.Bytes())
+	checkErr(err)
 
 	resp := make([]byte, 2048)
-	conn.Read(resp)
+	_, err = conn.Read(resp)
+	checkErr(err)
+
 	size := network.Len()
 	answer := dns.ParseResponse(resp, size)
 	fmt.Println(answer.String())
-	defer conn.Close()
 }

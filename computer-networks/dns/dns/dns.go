@@ -39,12 +39,22 @@ type QUERY struct {
 	Additional RESOURCE_RECORD
 }
 
-var dnsType = map[string]uint16{
+const CLASS_IN uint16 = 1
+
+var fromRecordType = map[string]uint16{
 	"A":     1,
 	"NS":    2,
 	"CNAME": 5,
 	"MX":    15,
 	"AAAA":  28,
+}
+
+var toRecordTyoe = map[uint16]string{
+	1:  "A",
+	2:  "NS",
+	5:  "CNAME",
+	15: "MX",
+	28: "AAAA",
 }
 
 func BuildQuery(hostname string, qType string, buffer *bytes.Buffer) {
@@ -59,7 +69,7 @@ func BuildQuery(hostname string, qType string, buffer *bytes.Buffer) {
 		msg = append(msg, []byte(v)...)
 	}
 	msg = append(msg, byte(0x00))
-	question := QUESTION{msg, 1, dnsType[qType]}
+	question := QUESTION{msg, CLASS_IN, fromRecordType[qType]}
 	// Query message delimeter
 	binary.Write(buffer, binary.BigEndian, question.QNAME)
 	binary.Write(buffer, binary.BigEndian, question.QCLASS)
@@ -95,5 +105,5 @@ func read16(data []byte, pointer *uint16) uint16 {
 }
 
 func (rr *RESOURCE_RECORD) String() string {
-	return fmt.Sprintf("Class: %d\nTTL: %d\nRDLENGHT: %d\nRDATA: %x\n", rr.CLASS, rr.TTL, rr.RDLENGTH, rr.RDATA)
+	return fmt.Sprintf("Class: %s\nTTL: %d\nRDLENGHT: %d\nRDATA: %x\n", toRecordTyoe[rr.CLASS], rr.TTL, rr.RDLENGTH, rr.RDATA)
 }
