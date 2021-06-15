@@ -1,7 +1,6 @@
 package socket
 
 import (
-	"fmt"
 	"syscall"
 )
 
@@ -60,7 +59,6 @@ func (s *Socket) Receive(buffer []byte) (size int) {
 }
 
 func (s *Socket) Send(buffer []byte) {
-	fmt.Println(s.sockAddr)
 	syscall.Sendto(s.nfd, buffer, 0, s.sockAddr)
 }
 
