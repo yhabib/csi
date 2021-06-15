@@ -13,7 +13,9 @@ class JSONHeaderReporter(http.server.BaseHTTPRequestHandler):
         self.send_response(http.server.HTTPStatus.OK)
         body = json.dumps(dict(self.headers), indent=4).encode('utf8')
         self.send_header('Content-Length', str(len(body)))
+        self.send_header('Content-Type', 'application/json')
         self.end_headers()
+        print(body)
         self.wfile.write(body)
 
     do_POST = do_GET

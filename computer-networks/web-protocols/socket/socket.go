@@ -53,9 +53,11 @@ func (s *Socket) Receive(data []byte) (size int) {
 }
 
 func (s *Socket) Send(buffer []byte) {
-	syscall.Sendto(s.Fd, buffer, 0, s.Addr)
+	err := syscall.Sendto(s.Fd, buffer, 0, s.Addr)
+	check(err)
 }
 
 func (s *Socket) Close() {
-	syscall.Close(s.Fd)
+	err := syscall.Close(s.Fd)
+	check(err)
 }
