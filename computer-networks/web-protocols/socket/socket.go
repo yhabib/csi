@@ -52,6 +52,12 @@ func (s *Socket) Receive(data []byte) (size int) {
 	return size
 }
 
+func (s *Socket) ReceiveAll(data []byte) (size int) {
+	size, _, err := syscall.Recvfrom(s.Fd, data, 0^syscall.MSG_WAITALL)
+	check(err)
+	return size
+}
+
 func (s *Socket) Send(buffer []byte) {
 	err := syscall.Sendto(s.Fd, buffer, 0, s.Addr)
 	check(err)

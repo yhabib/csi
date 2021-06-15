@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"http_proxy/parser"
 	"http_proxy/socket"
 	"log"
@@ -11,12 +12,14 @@ var (
 	SERVER_PORT = 9000
 	ADDRESS     = [4]byte{0, 0, 0, 0}
 	BUFFER_SIZE = 1024
+	PROXY_PATH  = "/proxy"
 )
 
 func main() {
 	serverSocket := socket.New(PROXY_PORT, ADDRESS)
-	// size := 0
-	// cache := make(map[string][]byte)
+	cache := make(map[string][]byte)
+	size := 0
+	isRequestCacheable := false
 
 	defer serverSocket.Close()
 	serverSocket.Bind()
@@ -28,19 +31,32 @@ func main() {
 		clientBuffer := make([]byte, BUFFER_SIZE)
 
 		connectionSocket := serverSocket.Accept()
-		connectionSocket.Receive(serverBuffer)
+		size = connectionSocket.Receive(serverBuffer)
 		req := parser.HttpRequest(serverBuffer)
-		log.Println(req.String())
+		fmt.Println(req.String())
+		if req.Path == PROXY_PATH {
+			if res, ok := cache[req.Path]; ok {
+				log.Println("Serving response from cache")
+				connectionSocket.Send(res)
+				continue
+			} else {
+				log.Printf("Request will be cached")
+				isRequestCacheable = true
+			}
+		}
 
 		// HTTP 1.0 -> Connect proxy to Server for every request
 		clientSocket := socket.New(SERVER_PORT, ADDRESS)
 		clientSocket.Connect()
-		clientSocket.Send(serverBuffer)
-		clientSocket.Receive(clientBuffer)
+		clientSocket.Send(serverBuffer[:size])
+		size = clientSocket.ReceiveAll(clientBuffer)
 		res := parser.HttpResponse(clientBuffer)
-		log.Println(res.String())
+		fmt.Println(res.String())
 
-		connectionSocket.Send(clientBuffer)
+		connectionSocket.Send(clientBuffer[:size])
+		if isRequestCacheable {
+			cache[req.Path] = clientBuffer[:size]
+		}
 
 		// Close connections
 		connectionSocket.Close()
