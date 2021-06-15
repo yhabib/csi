@@ -20,10 +20,10 @@ func main() {
 		serverBuffer := make([]byte, 1024)
 		clientBuffer := make([]byte, 1024)
 
-		size := connectionSocket.Receive(serverBuffer)
-		if size == 0 {
-			break
-		}
+		connectionSocket.Receive(serverBuffer)
+		// if size == 0 {
+		// 	break
+		// }
 		clientSocket.Send(serverBuffer)
 		clientSocket.Receive(clientBuffer)
 		connectionSocket.Send(clientBuffer)
