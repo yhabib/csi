@@ -5,26 +5,27 @@ import (
 )
 
 func main() {
-	sc := socket.New()
-	sp := socket.New()
-	defer sc.Close()
-	defer sp.Close()
+	serverSocket := socket.New(8080, [4]byte{0, 0, 0, 0})
+	clientSocket := socket.New(9000, [4]byte{0, 0, 0, 0})
 
-	sc.Bind(8080, [4]byte{0, 0, 0, 0})
-	sc.Listen(2048)
-	sc.Accept()
+	defer serverSocket.Close()
+	defer clientSocket.Close()
 
-	sp.Connect(9000, [4]byte{0, 0, 0, 0})
+	serverSocket.Bind()
+	serverSocket.Listen(2048)
+	clientSocket.Connect()
 
 	for {
+		connectionSocket := serverSocket.Accept()
 		serverBuffer := make([]byte, 1024)
 		clientBuffer := make([]byte, 1024)
-		size := sc.Receive(serverBuffer)
+
+		size := connectionSocket.Receive(serverBuffer)
 		if size == 0 {
 			break
 		}
-		sp.Send(serverBuffer)
-		sp.Receive(clientBuffer)
-		sc.Send(clientBuffer)
+		clientSocket.Send(serverBuffer)
+		clientSocket.Receive(clientBuffer)
+		connectionSocket.Send(clientBuffer)
 	}
 }

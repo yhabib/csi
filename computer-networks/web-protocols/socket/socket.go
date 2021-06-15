@@ -14,55 +14,48 @@ func check(err error) {
 }
 
 type Socket struct {
-	fd       int
-	nfd      int
-	sockAddr syscall.Sockaddr
+	Fd   int
+	Addr syscall.Sockaddr
 }
 
-func New() Socket {
+func New(port int, addr [4]byte) Socket {
 	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
 	check(err)
 
-	return Socket{fd, 0, nil}
+	return Socket{fd, &syscall.SockaddrInet4{Port: port, Addr: addr}}
 }
 
-func (s *Socket) Bind(port int, addr [4]byte) {
-	address := syscall.SockaddrInet4{Port: port, Addr: addr}
-	err := syscall.Bind(s.fd, &address)
+func (s *Socket) Bind() {
+	err := syscall.Bind(s.Fd, s.Addr)
 	check(err)
 }
 
-func (s *Socket) Connect(port int, addr [4]byte) {
-	address := syscall.SockaddrInet4{Port: port, Addr: addr}
-	err := syscall.Connect(s.fd, &address)
-	s.nfd = s.fd
-	s.sockAddr = &address
+func (s *Socket) Connect() {
+	err := syscall.Connect(s.Fd, s.Addr)
 	check(err)
 }
 
 func (s *Socket) Listen(backlog int) {
-	err := syscall.Listen(s.fd, backlog)
+	err := syscall.Listen(s.Fd, backlog)
 	check(err)
 }
 
-func (s *Socket) Accept() {
-	nfd, sockAddr, err := syscall.Accept(s.fd)
+func (s *Socket) Accept() *Socket {
+	fd, addr, err := syscall.Accept(s.Fd)
 	check(err)
-	s.nfd = nfd
-	s.sockAddr = sockAddr
+	return &Socket{Fd: fd, Addr: addr}
 }
 
-func (s *Socket) Receive(buffer []byte) (size int) {
-	size, _, err := syscall.Recvfrom(s.nfd, buffer, 0)
+func (s *Socket) Receive(data []byte) (size int) {
+	size, _, err := syscall.Recvfrom(s.Fd, data, 0)
 	check(err)
 	return size
 }
 
 func (s *Socket) Send(buffer []byte) {
-	syscall.Sendto(s.nfd, buffer, 0, s.sockAddr)
+	syscall.Sendto(s.Fd, buffer, 0, s.Addr)
 }
 
 func (s *Socket) Close() {
-	syscall.Close(s.fd)
-	syscall.Close(s.nfd)
+	syscall.Close(s.Fd)
 }
