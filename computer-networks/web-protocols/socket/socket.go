@@ -1,10 +1,12 @@
 package socket
 
 import (
+	"fmt"
 	"syscall"
 )
 
 // fd: File Descriptor
+// nfd: New File Descriptor
 
 func check(err error) {
 	if err != nil {
@@ -31,6 +33,14 @@ func (s *Socket) Bind(port int, addr [4]byte) {
 	check(err)
 }
 
+func (s *Socket) Connect(port int, addr [4]byte) {
+	address := syscall.SockaddrInet4{Port: port, Addr: addr}
+	err := syscall.Connect(s.fd, &address)
+	s.nfd = s.fd
+	s.sockAddr = &address
+	check(err)
+}
+
 func (s *Socket) Listen(backlog int) {
 	err := syscall.Listen(s.fd, backlog)
 	check(err)
@@ -50,6 +60,7 @@ func (s *Socket) Receive(buffer []byte) (size int) {
 }
 
 func (s *Socket) Send(buffer []byte) {
+	fmt.Println(s.sockAddr)
 	syscall.Sendto(s.nfd, buffer, 0, s.sockAddr)
 }
 

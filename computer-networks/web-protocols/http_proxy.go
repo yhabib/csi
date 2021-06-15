@@ -5,20 +5,26 @@ import (
 	"http_proxy/socket"
 )
 
-func main() {
-	s := socket.New()
-	defer s.Close()
+const PORT = 1234
 
-	s.Bind(8080, [4]byte{0, 0, 0, 0})
-	s.Listen(2048)
-	s.Accept()
+func main() {
+	sc := socket.New()
+	sp := socket.New()
+	defer sc.Close()
+
+	sc.Bind(8080, [4]byte{0, 0, 0, 0})
+	sc.Listen(2048)
+	sc.Accept()
+
+	sp.Connect(8081, [4]byte{0, 0, 0, 0})
+
 	for {
 		data := make([]byte, 1024)
-		size := s.Receive(data)
+		size := sc.Receive(data)
 		fmt.Printf("%s\n", data)
 		if size == 0 {
 			break
 		}
-		s.Send(data)
+		sp.Send(data)
 	}
 }
