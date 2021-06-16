@@ -14,17 +14,15 @@ type Request struct {
 }
 
 func HttpRequest(data []byte) Request {
-	// for the response
-	// parts := bytes.SplitN(data, []byte{'\r', '\n', '\r', '\n'}, 2)
 	lines := bytes.Split(data, []byte{'\r', '\n'})
-	firstLine := bytes.Split(lines[0], []byte{' '})
+	requestLine := bytes.Split(lines[0], []byte{' '})
 	secondLine := bytes.Split(lines[1], []byte{' '})
 	thirdLine := bytes.Split(lines[2], []byte{' '})
 
 	return Request{
-		Method:     string(firstLine[0]),
-		Path:       string(firstLine[1]),
-		Version:    string(firstLine[2]),
+		Method:     string(requestLine[0]),
+		Path:       string(requestLine[1]),
+		Version:    string(requestLine[2]),
 		Host:       string(secondLine[1]),
 		Connection: string(thirdLine[1]),
 	}
@@ -47,15 +45,15 @@ type Response struct {
 func HttpResponse(data []byte) Response {
 	parts := bytes.SplitN(data, []byte{'\r', '\n', '\r', '\n'}, 2)
 	lines := bytes.Split(parts[0], []byte{'\r', '\n'})
-	firstLine := bytes.Split(lines[0], []byte{' '})
+	requestLine := bytes.Split(lines[0], []byte{' '})
 	thirdLine := bytes.Split(lines[2], []byte{' '})
 	fourthLine := bytes.Split(lines[3], []byte{' '})
 	fifthLine := bytes.Split(lines[4], []byte{' '})
 
 	return Response{
-		Version: string(firstLine[0]),
-		Status:  string(firstLine[1]),
-		Message: string(firstLine[2]),
+		Version: string(requestLine[0]),
+		Status:  string(requestLine[1]),
+		Message: string(requestLine[2]),
 		Date:    string(thirdLine[1]),
 		Length:  string(fourthLine[1]),
 		Type:    string(fifthLine[1]),

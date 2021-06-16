@@ -5,7 +5,6 @@ import (
 )
 
 // fd: File Descriptor
-// nfd: New File Descriptor
 
 func check(err error) {
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"http_proxy/parser"
 	"http_proxy/socket"
 	"log"
+	"strings"
 )
 
 var (
@@ -16,11 +17,10 @@ var (
 )
 
 func main() {
-	serverSocket := socket.New(PROXY_PORT, ADDRESS)
 	cache := make(map[string][]byte)
 	size := 0
-	isRequestCacheable := false
 
+	serverSocket := socket.New(PROXY_PORT, ADDRESS)
 	defer serverSocket.Close()
 	serverSocket.Bind()
 	serverSocket.Listen(BUFFER_SIZE)
@@ -34,14 +34,13 @@ func main() {
 		size = connectionSocket.Receive(serverBuffer)
 		req := parser.HttpRequest(serverBuffer)
 		fmt.Println(req.String())
-		if req.Path == PROXY_PATH {
+		doesPathContainCachePath := strings.HasPrefix(req.Path, PROXY_PATH)
+		if doesPathContainCachePath {
 			if res, ok := cache[req.Path]; ok {
 				log.Println("Serving response from cache")
 				connectionSocket.Send(res)
+				connectionSocket.Close()
 				continue
-			} else {
-				log.Printf("Request will be cached")
-				isRequestCacheable = true
 			}
 		}
 
@@ -54,7 +53,8 @@ func main() {
 		fmt.Println(res.String())
 
 		connectionSocket.Send(clientBuffer[:size])
-		if isRequestCacheable {
+		if doesPathContainCachePath {
+			log.Printf("Caching request")
 			cache[req.Path] = clientBuffer[:size]
 		}
 
