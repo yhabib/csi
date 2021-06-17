@@ -1,35 +1,39 @@
 package parser
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"log"
+	"net/textproto"
 )
 
 type Request struct {
 	Method     string
 	Path       string
 	Version    string
+	Accept     string
 	Host       string
 	Connection string
 }
 
 func HttpRequest(data []byte) Request {
-	lines := bytes.Split(data, []byte{'\r', '\n'})
+	lines := bytes.SplitN(data, []byte{'\r', '\n'}, 2)
 	requestLine := bytes.Split(lines[0], []byte{' '})
-	secondLine := bytes.Split(lines[1], []byte{' '})
-	thirdLine := bytes.Split(lines[2], []byte{' '})
+	mimeHeader := parseMimeHeader(lines[1])
 
 	return Request{
 		Method:     string(requestLine[0]),
 		Path:       string(requestLine[1]),
 		Version:    string(requestLine[2]),
-		Host:       string(secondLine[1]),
-		Connection: string(thirdLine[1]),
+		Host:       mimeHeader.Get("host"),
+		Accept:     mimeHeader.Get("Accept"),
+		Connection: mimeHeader.Get("connect"),
 	}
 }
 
 func (r Request) String() string {
-	return fmt.Sprintf("---------------------\n%s %s %s\nHost: %s\nConnection: %s\n---------------------\n", r.Method, r.Path, r.Version, r.Host, r.Connection)
+	return fmt.Sprintf("---------------------\n%s %s %s\nHost: %s\nAccept: %s\nConnection: %s\n---------------------\n", r.Method, r.Path, r.Version, r.Host, r.Accept, r.Connection)
 }
 
 type Response struct {
@@ -43,25 +47,31 @@ type Response struct {
 }
 
 func HttpResponse(data []byte) Response {
-	parts := bytes.SplitN(data, []byte{'\r', '\n', '\r', '\n'}, 2)
-	lines := bytes.Split(parts[0], []byte{'\r', '\n'})
+	lines := bytes.SplitN(data, []byte{'\r', '\n'}, 2)
 	requestLine := bytes.Split(lines[0], []byte{' '})
-	thirdLine := bytes.Split(lines[2], []byte{' '})
-	fourthLine := bytes.Split(lines[3], []byte{' '})
-	fifthLine := bytes.Split(lines[4], []byte{' '})
-
+	mimeHeader := parseMimeHeader(lines[1])
+	body := bytes.SplitN(data, []byte{'\r', '\n', '\r', '\n'}, 2)[1]
 	return Response{
 		Version: string(requestLine[0]),
 		Status:  string(requestLine[1]),
 		Message: string(requestLine[2]),
-		Date:    string(thirdLine[1]),
-		Length:  string(fourthLine[1]),
-		Type:    string(fifthLine[1]),
-		Body:    parts[1],
+		Date:    mimeHeader.Get("date"),
+		Length:  mimeHeader.Get("content-length"),
+		Type:    mimeHeader.Get("type"),
+		Body:    body,
 	}
 }
 
 func (r Response) String() string {
 	return fmt.Sprintf("---------------------\n%s %s %s\nDate: %s\nContent-Length: %s\nContent-Type: %s\nBody: %s\n---------------------\n",
 		r.Version, r.Status, r.Message, r.Date, r.Length, r.Type, r.Body)
+}
+
+func parseMimeHeader(data []byte) textproto.MIMEHeader {
+	tp := textproto.NewReader(bufio.NewReader(bytes.NewReader(data)))
+	mimeHeader, err := tp.ReadMIMEHeader()
+	if err != nil {
+		log.Fatalf("parseMimeHeader: %s", err)
+	}
+	return mimeHeader
 }
