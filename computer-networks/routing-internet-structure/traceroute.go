@@ -20,6 +20,7 @@ var (
 	ADDR                        = [4]byte{0, 0, 0, 0}
 	ICMP_TYPE_TTL_EXPIRED uint8 = 11
 	ICMP_CODE_TTL_EXPIRED uint8 = 0
+	TTL                         = 10
 )
 
 // Traceroute:
@@ -35,41 +36,48 @@ func main() {
 
 	// port should be quite random as it is what we use to know when to stop
 	port := flag.Int("p", 45123, "Set port to be used")
+	pings := flag.Int("pings", 1, "Number of pings to send per TTL")
 	flag.Parse()
 
 	addr := getDestAddr(os.Args[len(os.Args)-1], *port)
 
 	pinger := pinger.New(PORT, ADDR)
-	defer pinger.Close()
 	listener := listener.New(PORT, ADDR)
 	listener.Bind()
-	defer listener.Close()
 
-	for ttl := 1; ttl <= 10; ttl++ {
-		start := time.Now()
-		pinger.Ping(&addr, ttl)
+	for ttl := 1; ttl <= TTL; ttl++ {
+		fmt.Printf("%d. ", ttl)
+		var prevIp parser.IpAddr
 
-		for {
-			rec := make([]byte, 512)
-			addr, err := listener.Receive(rec)
-			duration := time.Since(start)
+		for ping := 0; ping < *pings; ping++ {
+			start := time.Now()
+			pinger.Ping(&addr, ttl)
 
-			icmpType, icmpCode := parser.Icmp(rec)
-			ipAddr, ipName := parser.Addr(addr)
+			for {
+				rec := make([]byte, 512)
+				addr, err := listener.Receive(rec)
+				duration := time.Since(start)
+				icmpType, icmpCode := parser.Icmp(rec)
+				ipAddr, ipName := parser.Addr(addr)
+				if icmpType == ICMP_TYPE_TTL_EXPIRED || icmpCode == ICMP_CODE_TTL_EXPIRED {
+					if prevIp.String() != ipAddr.String() {
+						fmt.Printf("%s (%s)", ipName, ipAddr.String())
+					}
+					fmt.Printf(" %.2fms", float32(duration)/1000000)
+					prevIp = ipAddr
+					break
+				}
 
-			if icmpType == ICMP_TYPE_TTL_EXPIRED && icmpCode == ICMP_CODE_TTL_EXPIRED {
-				fmt.Printf("%d. %s (%s) %dms\n", ttl, ipName, ipAddr.String(), duration.Milliseconds())
-				break
-			}
-
-			if err != nil {
-				fmt.Println(err)
-				break
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
 			}
 		}
-
-		// fmt.Println(rec)
+		fmt.Println()
 	}
+	defer pinger.Close()
+	defer listener.Close()
 }
 
 func getDestAddr(arg string, port int) syscall.SockaddrInet4 {

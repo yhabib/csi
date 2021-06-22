@@ -11,7 +11,9 @@ ICMP package
 
 ### Questions
 
-* Sometimes nothing happense. It triggers the UDP request but no response??
+* Sometimes nothing happens. It triggers the initial PING but no response??
+* It gets stucked after the sixth hop
+* If I trigger traceroute some traffic comes in ?
 
 ### Resources
 
