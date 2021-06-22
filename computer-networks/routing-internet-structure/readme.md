@@ -7,7 +7,7 @@
 ### How it works?
 
 It exploits the TTL field in the IP header by incrementing it from 1 till it reaches the destination.
-ICMP package
+It uses ICMP package(error message protocol) to let the sender know what happened
 
 ### Questions
 
@@ -17,6 +17,5 @@ ICMP package
 
 ### Resources
 
-* [Video](https://www.youtube.com/watch?v=G05y9UKT69s)
-
+* [rfc792](https://datatracker.ietf.org/doc/html/rfc792)
 * [Video](https://www.youtube.com/watch?v=75yKT3OuE44)
