@@ -17,7 +17,7 @@ const N = 235886
 const M = 100000
 
 // number of hash functions (m/n)ln(2)
-const K = 1
+const K = 3
 
 func loadWords(path string) ([]string, error) {
 	file, err := os.Open(path)

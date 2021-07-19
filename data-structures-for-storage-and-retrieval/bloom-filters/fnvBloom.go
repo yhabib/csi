@@ -3,19 +3,27 @@ package main
 import (
 	"encoding/binary"
 	"hash/fnv"
+	"unsafe"
+)
+
+const (
+	BYTES_PER_ELEMENT = 8
+	BITS_PER_ELEMENT  = 64
 )
 
 type fnvBloomFilter struct {
-	data  []bool
-	nHash uint8
-	size  uint32
+	data   []uint64
+	nHash  uint8
+	length uint32
 }
 
-func newFnvBloomFilter(size uint32, nHash uint8) *fnvBloomFilter {
+func newFnvBloomFilter(size int, nHash uint8) *fnvBloomFilter {
+	numElements := size / BYTES_PER_ELEMENT
+	length := uint32(numElements * BITS_PER_ELEMENT)
 	return &fnvBloomFilter{
-		data:  make([]bool, size),
-		nHash: nHash,
-		size:  size,
+		data:   make([]uint64, numElements),
+		nHash:  nHash,
+		length: length,
 	}
 }
 
@@ -23,19 +31,26 @@ func newFnvBloomFilter(size uint32, nHash uint8) *fnvBloomFilter {
 // Based on solution :(
 func (b *fnvBloomFilter) hash(item string, i int) uint32 {
 	fnv := fnv.New32()
-	bytes := []byte(item)
+
+	// this change allows to avoid copying the data and just reference the underlying bits
+	// bytes := []byte(item)
+	bytes := *((*[]byte)(unsafe.Pointer(&item)))
 	prefix := byte(i)
 	fnv.Write([]byte{prefix})
 	fnv.Write(bytes)
-	return fnv.Sum32() % uint32(b.size)
+	return fnv.Sum32() % b.length
 }
 
-func (b *fnvBloomFilter) get(index uint32) bool {
-	return b.data[index]
+func (b *fnvBloomFilter) get(k uint32) bool {
+	index := k / BITS_PER_ELEMENT
+	offset := k % BITS_PER_ELEMENT
+	return b.data[index]&(1<<offset) != 0
 }
 
-func (b *fnvBloomFilter) set(index uint32) {
-	b.data[index] = true
+func (b *fnvBloomFilter) set(k uint32) {
+	index := k / BITS_PER_ELEMENT
+	offset := k % BITS_PER_ELEMENT
+	b.data[index] = b.data[index] | (1 << offset)
 }
 
 func (b *fnvBloomFilter) add(item string) {
