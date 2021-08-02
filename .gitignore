@@ -7,3 +7,4 @@ bin/**
 **/**/assignment/**/*.json
 **/unix/**/*.txt
 **/unix/**/*.html
+test/
