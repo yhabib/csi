@@ -23,8 +23,8 @@ func (b *uncompressedBitmap) Set(x uint32) {
 	idx := x / wordSize
 	offset := x % wordSize
 	size := uint32(len(b.data))
-	if idx > size {
-		b.data = append(b.data, make([]uint64, 2*idx)...)
+	if idx >= size {
+		b.data = append(b.data, make([]uint64, 2*idx+1)...)
 	}
 	b.data[idx] |= (1 << offset)
 }
