@@ -6,6 +6,7 @@
 
 void sigint_handler(int sig)
 {
+  // it can't call printf() as it is not async safe
   write(0, "Ahhh! SIGINT!\n", 14);
 }
 
@@ -16,7 +17,8 @@ int main(void)
   struct sigaction sa;
 
   sa.sa_handler = sigint_handler;
-  sa.sa_flags = 0; // or SA_RESTART
+  // sa.sa_flags = 0; in this case if the signal is send the child process fgets will be exit
+  sa.sa_flags = SA_RESTART; // now the handler will restart
   sigemptyset(&sa.sa_mask);// block none
 
   if (sigaction(SIGINT, &sa, NULL) == -1)
@@ -28,6 +30,7 @@ int main(void)
   printf("Enter a string:\n");
 
   if (fgets(s, sizeof s, stdin) == NULL)
+    // fgets was interrupted by a signal, in this case SIGINT
     perror("fgets");
   else
     printf("You entered: %s\n", s);
