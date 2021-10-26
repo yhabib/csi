@@ -48,10 +48,11 @@ func main() {
 		clientSocket := socket.New(SERVER_PORT, ADDRESS)
 		clientSocket.Connect()
 		clientSocket.Send(serverBuffer[:size])
-		size = clientSocket.ReceiveAll(clientBuffer)
+		size = clientSocket.Receive(clientBuffer)
 		res := parser.HttpResponse(clientBuffer)
 		fmt.Println(res.String())
-
+		fmt.Println(size)
+		fmt.Println(res.Length)
 		connectionSocket.Send(clientBuffer[:size])
 		if doesPathContainCachePath {
 			log.Printf("Caching request")

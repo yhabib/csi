@@ -40,3 +40,8 @@ File descriptiors are _ints_ that can be use with system calls like `open()`, `c
 
 **Implete `ls | wc -l` in C**
 
+## Prework
+
+### Identify reasons why the current architecture is slow or inflexible to future changes
+
+- It has 3 waiting processes but can only send data to one at a time, kind of like 1/3 of the time reading

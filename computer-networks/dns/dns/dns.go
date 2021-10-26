@@ -104,6 +104,14 @@ func read16(data []byte, pointer *uint16) uint16 {
 	return x
 }
 
+func renderAddress(addr []byte) string {
+	nums := make([]string, len(addr))
+	for i, v := range addr {
+		nums[i] = string(uint16(v))
+	}
+	return strings.Join(nums, ".")
+}
+
 func (rr *RESOURCE_RECORD) String() string {
-	return fmt.Sprintf("Class: %s\nTTL: %d\nRDLENGHT: %d\nRDATA: %x\n", toRecordTyoe[rr.CLASS], rr.TTL, rr.RDLENGTH, rr.RDATA)
+	return fmt.Sprintf("Class: %s\nTTL: %d\nRDLENGHT: %d\nRDATA: %s\n", toRecordTyoe[rr.CLASS], rr.TTL, rr.RDLENGTH, renderAddress(rr.RDATA))
 }

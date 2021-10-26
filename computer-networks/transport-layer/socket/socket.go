@@ -28,14 +28,25 @@ func (s *Socket) Bind() {
 	check(err)
 }
 
-func (s *Socket) Receive(data []byte) (size int) {
-	size, _, err := syscall.Recvfrom(s.Fd, data, 0)
+func (s *Socket) Receive(buffer []byte) (size int, addr syscall.Sockaddr) {
+	size, addr, err := syscall.Recvfrom(s.Fd, buffer, 0)
+	check(err)
+	return size, addr
+}
+
+func (s *Socket) ReceiveNonBlocking(buffer []byte) (size int) {
+	size, _, err := syscall.Recvfrom(s.Fd, buffer, 0^syscall.MSG_DONTWAIT)
 	check(err)
 	return size
 }
 
 func (s *Socket) Send(buffer []byte) {
 	err := syscall.Sendto(s.Fd, buffer, 0, s.Addr)
+	check(err)
+}
+
+func (s *Socket) SendTo(buffer []byte, addr syscall.Sockaddr) {
+	err := syscall.Sendto(s.Fd, buffer, 0, addr)
 	check(err)
 }
 
